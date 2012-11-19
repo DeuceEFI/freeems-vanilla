@@ -83,18 +83,12 @@ const volatile fixedConfig2 fixedConfigs2 FIXEDCONF2 = {
 #elif CONFIG == DEUCES10_ID
 		MAPMinimum:    MPX4100AMin,
 		MAPRange:      MPX4100ARange,
-#elif CONFIG == SEANKR1_ID
-		MAPMinimum:    MPX4250AMin,
-		MAPRange:      MPX4250ARange,
 #else
 		MAPMinimum:    MPX4250AMin,
 		MAPRange:      MPX4250ARange,
 #endif
 // AAP Sensor Configuration
 #if CONFIG == SNOTROCKET_ID
-		AAPMinimum:    HondaDenso183kPaMin,
-		AAPRange:      HondaDenso183kPaRange,
-#elif CONFIG == SEANKR1_ID
 		AAPMinimum:    HondaDenso183kPaMin,
 		AAPRange:      HondaDenso183kPaRange,
 #else
@@ -118,8 +112,13 @@ const volatile fixedConfig2 fixedConfigs2 FIXEDCONF2 = {
 		BRVMinimum:    VOLTS(0),
 		BRVRange:      VOLTS(24.5), // Standard 3.9k and 1k values.
 #endif
+#if CONFIG == DEUCECOUPE_ID
+		TPSMinimumADC: 81,
+		TPSMaximumADC: 574
+#else
 		TPSMinimumADC: 0,
 		TPSMaximumADC: ADC_MAX_VALUE
+#endif
 	},
 	sensorSettings:{ // Warning, until the following mods are made to ADC use, setting this lower than your cranking rpm will result in a pulsing fuel pump.
 		readingTimeout: 500, /** Default to 0.5 of a second 120rpm for a 4 cylinder @todo TODO new method of ADC sampling, Always sample ADC async, If no sync, use async ADC readings, otherwise use synced. Do this with pointer to array set at beginning of math */
@@ -213,12 +212,6 @@ const volatile fixedConfig2 fixedConfigs2 FIXEDCONF2 = {
 #elif CONFIG == SNOTROCKET_ID
 		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(100),
 		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(100),
-#elif CONFIG == SEANKR1_ID
-		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(135),
-		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(135),
-#elif CONFIG == DEUCES10_ID
-		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(135),
-		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(135),
 #else
 		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(50),
 		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(50),

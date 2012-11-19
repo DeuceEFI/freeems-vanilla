@@ -37,8 +37,3 @@
  *
  * @author Sean Keys
  */
-
-
-XGOutputEvent *XGOutputEvents = 0;
-unsigned short *xgsInStamp = 0;
-unsigned short *xgsEventsToSch = 0;

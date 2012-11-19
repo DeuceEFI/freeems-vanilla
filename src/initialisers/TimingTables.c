@@ -59,9 +59,12 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #elif CONFIG == SNOTROCKET_ID
 	RPMLength:  12,
 	LoadLength: 8,
-#elif CONFIG == SEANKR1_ID
-	RPMLength:  25,
-	LoadLength: 16,
+#elif CONFIG == DEUCECOUPE_ID
+	RPMLength:  13,
+	LoadLength: 10,
+#elif CONFIG == DEUCES10_ID
+	RPMLength:  13,
+	LoadLength: 10,
 #else
 	RPMLength:  16,
 	LoadLength: 16,
@@ -75,16 +78,16 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #include "../data/tables/axis/FredsTruck-RPM.h"
 #elif CONFIG == SEANKLT1_ID
 #include "../data/tables/axis/SeansLT1-RPM.h"
-#elif CONFIG == SEANKR1_ID
-#include "../data/tables/axis/SeansR1-RPM.h"
+#elif SEANKR1 // No ID assigned yet!
+#include "../data/tables/axis/FredsTruck-RPM.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-RPM.h"
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-RPM.h"
 #elif CONFIG == DEUCECOUPE_ID
-#include "../data/tables/axis/HotelHyundai-RPM.h"
+#include "../data/tables/axis/Deuces3100-RPM.h"
 #elif CONFIG == DEUCES10_ID
-#include "../data/tables/axis/HotelHyundai-RPM.h"
+#include "../data/tables/axis/Deuces3100-RPM.h"
 #elif CONFIG == PETERTRUCK_ID
 #include "../data/tables/axis/HotelHyundai-RPM.h"
 #elif CONFIG == DEFAULT_ID
@@ -102,16 +105,16 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #include "../data/tables/axis/FredsTruck-Load.h"
 #elif CONFIG == SEANKLT1_ID
 #include "../data/tables/axis/FredsTruck-Load.h"
-#elif CONFIG == SEANKR1_ID
-#include "../data/tables/axis/SeansR1-Load.h"
+#elif SEANKR1 // No ID assigned yet!
+#include "../data/tables/axis/FredsTruck-Load.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-Load.h"
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-Load.h"
 #elif CONFIG == DEUCECOUPE_ID
-#include "../data/tables/axis/HotelHyundai-Load.h"
+#include "../data/tables/axis/Deuces3100-Load.h"
 #elif CONFIG == DEUCES10_ID
-#include "../data/tables/axis/HotelHyundai-Load.h"
+#include "../data/tables/axis/Deuces3100-Load.h"
 #elif CONFIG == PETERTRUCK_ID
 #include "../data/tables/axis/HotelHyundai-Load.h"
 #elif CONFIG == DEFAULT_ID
@@ -130,8 +133,8 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #include "../data/tables/ign/flat15degrees.h"
 #elif CONFIG == SEANKLT1_ID
 #include "../data/tables/ign/SeansLT1IgnitionTiming.h"
-#elif CONFIG == SEANKR1_ID
-#include "../data/tables/ign/SeansR1IgnitionTiming.h"
+#elif SEANKR1 // No ID assigned yet!
+#include "../data/tables/ign/flat0degrees.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/ign/SimsVolvoIgnitionTiming.h"
 #elif CONFIG == SLATER_ID
@@ -140,7 +143,6 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 //#include "../data/tables/ign/TestDIS.h" // Use for verifying your DIS timing
 #include "../data/tables/ign/Deuces3100Timing.h"
 #elif CONFIG == DEUCES10_ID
-//#include "../data/tables/ign/TestDIS.h" // Use for verifying your DIS timing
 #include "../data/tables/ign/Deuces3100Timing.h"
 #elif CONFIG == PETERTRUCK_ID
 #include "../data/tables/ign/HotelHyundaiIgnitionTiming.h"

@@ -29,12 +29,10 @@
  * @ingroup dataInitialisers
  *
  * @brief A default set of RPMs for a worked pushrod v8.
- *
- * This file only contains the data to be hash included into all mainTable RPM sections
  */
 
 
-// 16 RPM values of which only 16 are used due to current tuning software limitations
+// 16 RPM values due to limitation in previous tuner
  RPM(200),
  RPM(500),
  RPM(900),
@@ -50,17 +48,4 @@ RPM(4950),
 RPM(5400),
 RPM(5850),
 RPM(6300),
-RPM(6750),
-
-// spare:
-RPM(9000),
-RPM(9001),
-RPM(9002),
-RPM(9003),
-RPM(9004),
-RPM(9005),
-RPM(9006),
-RPM(9007),
-RPM(9008),
-RPM(9009),
-RPM(9010)
+RPM(6750)

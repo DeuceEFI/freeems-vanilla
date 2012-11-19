@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2009, 2010, 2011 Sean Keys, Fred Cooke
+ * Copyright 2009-2012 Sean Keys, Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -30,8 +30,8 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_LT1_360_8_H_SEEN
 #define FILE_LT1_360_8_H_SEEN
 

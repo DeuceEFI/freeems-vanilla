@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -37,8 +37,6 @@
  * - Configure and enable interrupts
  * - Copy tunable data up to RAM from flash
  * - Configure peripheral module behaviour
- *
- * @author Fred Cooke
  */
 
 
@@ -59,13 +57,13 @@
  * The main init function to be called from main.c before entering the main
  * loop. This function is simply a delegator to the finer grained special
  * purpose init functions.
- *
- * @author Fred Cooke
  */
 void init(){
 	ATOMIC_START();         /* Disable ALL interrupts while we configure the board ready for use */
 	initPLL();              /* Set up the PLL and use it */
-	initIO();               /* TODO make this config dependent. Set up all the pins and modules to be in low power harmless states */
+	initGPIO();
+	initPWM();
+	initADC();
 	initAllPagedRAM();      /* Copy table and config blocks of data from flash to the paged RAM blocks for fast data lookup */
 	initVariables();        /* Initialise the rest of the running variables etc */
 	initFlash();            /* TODO, finalise this */
@@ -86,23 +84,17 @@ void init(){
 #endif
 
 
-/* used to chop out all the init stuff at compile time for hardware testing. */
-//#define NO_INIT
-
-
 /** @brief Set the PLL clock frequency
  *
  * Set the Phase Locked Loop to our desired frequency (80MHz) and switch to
  * using it for clock (40MHz bus speed).
- *
- * @author Fred Cooke
  */
 void initPLL(){
-	CLKSEL &= PLLSELOFF;	/* Switches to base external OSCCLK to ensure PLL is not being used (off out of reset, but not sure if the monitor turns it on before passing control or not) */
-	PLLCTL &= PLLOFF;		/* Turn the PLL device off to adjust its speed (on by default out of reset) */
-	REFDV = PLLDIVISOR;		/* 16MHz / (3 + 1) = 4MHz Bus frequency */
-	SYNR = PLLMULTIPLIER;	/* 4MHz * (9 + 1) = 40MHz Bus frequency */
-	PLLCTL |= PLLON;		/* Turn the PLL device back on again at 80MHz */
+	CLKSEL &= PLLSELOFF;  /* Switches to base external OSCCLK to ensure PLL is not being used (off out of reset, but not sure if the monitor turns it on before passing control or not) */
+	PLLCTL &= PLLOFF;     /* Turn the PLL device off to adjust its speed (on by default out of reset) */
+	REFDV = PLLDIVISOR;   /* 16MHz / (3 + 1) = 4MHz Bus frequency */
+	SYNR = PLLMULTIPLIER; /* 4MHz * (9 + 1) = 40MHz Bus frequency */
+	PLLCTL |= PLLON;      /* Turn the PLL device back on again at 80MHz */
 
 	while (!(CRGFLG & PLLLOCK)){
 		/* Do nothing while we wait till the PLL loop locks onto the target frequency. */
@@ -110,25 +102,20 @@ void initPLL(){
 		/* Bus frequency is half PLL frequency and given by ((crystal frequency / (REFDV + 1)) * (SYNR + 1)) */
 	}
 
-	CLKSEL = PLLSELON;		/* Switches to PLL clock for internal bus frequency	*/
-	/* from MC9S12XDP512V2.pdf Section 2.4.1.1.2 page 101 Third paragraph		*/
-	/* "This takes a MAXIMUM of 4 OSCCLK clock cylces PLUS 4 PLL clock cycles"	*/
-	/* "During this time ALL clocks freeze, and CPU activity ceases"			*/
-	/* Therefore there is no point waiting for this to occur, we already are...	*/
+	CLKSEL = PLLSELON; /* Switches to PLL clock for internal bus frequency      */
+	/* from MC9S12XDP512V2.pdf Section 2.4.1.1.2 page 101 Third paragraph       */
+	/* "This takes a MAXIMUM of 4 OSCCLK clock cylces PLUS 4 PLL clock cycles"  */
+	/* "During this time ALL clocks freeze, and CPU activity ceases"            */
+	/* Therefore there is no point waiting for this to occur, we already are... */
 }
 
 
-/* Configure all the I/O to default values to keep power use down etc */
-void initIO(){
-	/* for now, hard code all stuff to be outputs as per Freescale documentation,	*/
-	/* later what to do will be pulled from flash configuration such that all		*/
-	/* things are setup at once, and not messed with thereafter. when the port		*/
-	/* something uses is changed via the tuning interface, the confuration will be	*/
-	/* done on the fly, and the value burned to flash such that next boot happens	*/
-	/* correctly and current running devices are used in that way.					*/
-
-	/* Turn off and on and configure all the modules in an explicit way */
-	// TODO set up and turn off all modules (CAN,SCI,SPI,IIC,etc)
+/// Set up the analogue inputs
+void initADC(){
+	// Currently not true, and may never be: TODO When the port something uses
+	// is changed via the tuning interface, the configuration will be done on
+	// the fly, and the value burned to flash such that next boot happens
+	// correctly and current running devices are used in that way.
 
 	/* Digital input buffers on the ATD channels are off by default, leave them this way! */
 	//ATD0DIEN = ZEROS; /* You are out of your mind if you waste this on digital Inputs */
@@ -150,81 +137,84 @@ void initIO(){
 	ATD1CTL3 = 0x40; /* Set sequence length = 8 */
 	ATD0CTL4 = 0x73; /* Set the ADC clock and sample period for best accuracy */
 	ATD0CTL5 = 0xB0; /* Sets justification to right, multiplex and scan all channels. Writing to this causes conversions to begin */
+}
 
-#ifndef NO_INIT
-	/* Set up the PWM component and initialise its values to off */
-	PWME = 0x7F; /* Turn on PWM 0 - 6 (7 is user LED on main board) */
-	PWMCLK = ZEROS; /* The fastest we can go for all channels */
-	PWMPRCLK = ZEROS; /* The fastest prescaler we can go for all channels */
-	PWMSCLA = ZEROS; /* The fastest we can go */
-	PWMSCLB = ZEROS; /* The fastest we can go */
+
+/// Set up the PWM module from configuration
+void initPWM(){
 	/* TODO PWM channel concatenation for high resolution */
 	// join channel pairs together here (needs 16 bit regs enabled too)
 	/* TODO Initialise pwm channels with frequency, and initial duty for real use */
 	// initial PWM settings for testing
-	/* PWM periods */
-	PWMPER0 = 0xFF; // 255 for ADC0 testing
-	PWMPER1 = 0xFF; // 255 for ADC1 testing
-	PWMPER2 = 0xFF; // 255 for ADC1 testing
-	PWMPER3 = 0xFF; // 255 for ADC1 testing
-	PWMPER4 = 0xFF; // 255 for ADC1 testing
-	PWMPER5 = 0xFF; // 255 for ADC1 testing
-	PWMPER6 = 0xFF; // 255 for ADC1 testing
-	PWMPER7 = 0xFF; // 255 for ADC1 testing
-	/* PWM duties */
-	PWMDTY0 = 0;
-	PWMDTY1 = 0;
-	PWMDTY2 = 0;
-	PWMDTY3 = 0;
-	PWMDTY4 = 0;
-	PWMDTY5 = 0;
-	PWMDTY6 = 0;
-	PWMDTY7 = 0;
+
+	PWMPER0 = fixedConfigs2.inputOutputSettings.PWMPeriod0;
+	PWMPER1 = fixedConfigs2.inputOutputSettings.PWMPeriod1;
+	PWMPER2 = fixedConfigs2.inputOutputSettings.PWMPeriod2;
+	PWMPER3 = fixedConfigs2.inputOutputSettings.PWMPeriod3;
+	PWMPER4 = fixedConfigs2.inputOutputSettings.PWMPeriod4;
+	PWMPER5 = fixedConfigs2.inputOutputSettings.PWMPeriod5;
+	PWMPER6 = fixedConfigs2.inputOutputSettings.PWMPeriod6;
+	PWMPER7 = fixedConfigs2.inputOutputSettings.PWMPeriod7;
+
+	PWMDTY0 = fixedConfigs2.inputOutputSettings.PWMInitialDuty0;
+	PWMDTY1 = fixedConfigs2.inputOutputSettings.PWMInitialDuty1;
+	PWMDTY2 = fixedConfigs2.inputOutputSettings.PWMInitialDuty2;
+	PWMDTY3 = fixedConfigs2.inputOutputSettings.PWMInitialDuty3;
+	PWMDTY4 = fixedConfigs2.inputOutputSettings.PWMInitialDuty4;
+	PWMDTY5 = fixedConfigs2.inputOutputSettings.PWMInitialDuty5;
+	PWMDTY6 = fixedConfigs2.inputOutputSettings.PWMInitialDuty6;
+	PWMDTY7 = fixedConfigs2.inputOutputSettings.PWMInitialDuty7;
+
+	PWMCLK   = fixedConfigs2.inputOutputSettings.PWMClock;
+	PWMPRCLK = fixedConfigs2.inputOutputSettings.PWMClockPrescaler;
+	PWMSCLA  = fixedConfigs2.inputOutputSettings.PWMScalerA;
+	PWMSCLB  = fixedConfigs2.inputOutputSettings.PWMScalerB;
+	PWMPOL   = fixedConfigs2.inputOutputSettings.PWMPolarity;
+	PWMCAE   = fixedConfigs2.inputOutputSettings.PWMCenterAlign;
+	PWMCTL   = fixedConfigs2.inputOutputSettings.PWMControl & 0xF0; // Disallow access to power saving and reserved bits
+	PWME     = fixedConfigs2.inputOutputSettings.PWMEnable; // MUST be done after concatenation with PWMCTL
+}
 
 
-	/* Initialise the state of pins configured as output */
-	/* Initialise to low such that transistor grounded things are all turned off by default. */
-	PORTA = BIT7; /* Set fuel pump on at boot time. The serial monitor pin is on 0x40, and could cause problems if capacitance at the output is large when a reset occurs. */
-	PORTB = ZEROS; /* Init the rest of the spark outputs as off */
-	PORTE = 0x1F; /* 0b_0001_1111 : when not in use 0b_1001_1111 PE7 should be high PE5 and PE6 should be low, the rest high */
-	PORTK = ZEROS;
-	PORTS = 0x02; // Set TX0 pin to high between transmissions!
-	PORTT = ZEROS; /* All pins in off state at boot up (only matters for 2 - 7) */
-	PORTM = ZEROS;
-	PORTP = ZEROS; // TODO hook these up to the adc channels such that you can vary the brightness of an led with a pot.
-	PORTH = ZEROS;
-	PORTJ = ZEROS;
+/// Set up all the pin states as per configuration, but protect key states.
+void initGPIO(){
+	// Set the initial pin state of pins configured as output
+	PORTA = fixedConfigs2.inputOutputSettings.PortInitialValueA | BIT6 | BIT7; // Mask the fuel pump relay and CEL pins on
+	PORTB = fixedConfigs2.inputOutputSettings.PortInitialValueB;
+	PORTC = fixedConfigs2.inputOutputSettings.PortInitialValueC;
+	PORTD = fixedConfigs2.inputOutputSettings.PortInitialValueD;
+	PORTE = (fixedConfigs2.inputOutputSettings.PortInitialValueE | BIT7) & (NBIT5 & NBIT6); // 7 should be high, and 5 and 6 low, to reduce current draw. The rest don't matter. 0 and 1 are not outputs.
+	PORTH = fixedConfigs2.inputOutputSettings.PortInitialValueH;
+	PORTJ = fixedConfigs2.inputOutputSettings.PortInitialValueJ;
+	PORTK = fixedConfigs2.inputOutputSettings.PortInitialValueK;
+	PORTM = fixedConfigs2.inputOutputSettings.PortInitialValueM;
+	PORTP = fixedConfigs2.inputOutputSettings.PortInitialValueP;
+	PORTS = fixedConfigs2.inputOutputSettings.PortInitialValueS | 0x02; // Mask the SCI0 TX pin to high between transmissions!
+	PORTT = 0x00; // Set all ECT pins to off state, only matters for 2-7, and only if being used. TODO mask this dynamically based on decoder type and configured channels.
 	/* AD0PT1 You are out of your mind if you waste this on digital Inputs */
 	/* AD1PT1 You are out of your mind if you waste this on digital Inputs */
 
-	/* Initialise the Data Direction Registers */
-	/* To outputs based on the note at the end of chapter 1.2.2 of MC9S12XDP512V2.pdf */
-	DDRA = ONES; /* GPIO (8) */
-	DDRB = ONES; /* GPIO (8) */
-	DDRE = 0xFC; /* 0b_1111_1100 : Clock and mode pins PE0,PE1 are input only pins, the rest are GPIO */
-	DDRK = ONES; /* Only 0,1,2,3,4,5,7, NOT 6 (7) */
-	DDRS = 0xFE; /* RX0 as input: SCI0 (RX,TX), SCI1 (RX,TX), SPI0 (MISO,MOSI,SCK,SS) (8) */
-	DDRT = 0xFC; /* 0b_1111_1100 set ECT pins 0,1 to IC and 2:7 to OC (8) */
-	DDRM = ONES; /* CAN 0 - 3 (8) */
-	DDRP = ONES; /* PWM pins (8) */
-	DDRH = ZEROS; /* All pins configured as input for misc isrs (SPI1, SPI2) (8) */
-	DDRJ = ONES; /* Only 0,1,6,7 are brought out on the 112 pin chip (4) */
-	/* Configure the non bonded pins to output to avoid current drain (112 pin package) */
-	DDRC = ONES; /* NON-bonded external data bus pins */
-	DDRD = ONES; /* NON-bonded external data bus pins */
+	// Initialise the Data Direction Registers
+	DDRA = fixedConfigs2.inputOutputSettings.PortDirectionA | BIT6 | BIT7; // Mask the fuel pump relay and CEL pins as outputs
+	DDRB = fixedConfigs2.inputOutputSettings.PortDirectionB;
+	DDRC = fixedConfigs2.inputOutputSettings.PortDirectionC;
+	DDRD = fixedConfigs2.inputOutputSettings.PortDirectionD;
+	DDRE = fixedConfigs2.inputOutputSettings.PortDirectionE; // No need to mask off bits 0 and 1, they have no effect and are always inputs.
+	DDRH = fixedConfigs2.inputOutputSettings.PortDirectionH;
+	DDRJ = fixedConfigs2.inputOutputSettings.PortDirectionJ;
+	DDRK = fixedConfigs2.inputOutputSettings.PortDirectionK;
+	DDRM = fixedConfigs2.inputOutputSettings.PortDirectionM;
+	DDRP = fixedConfigs2.inputOutputSettings.PortDirectionP;
+	DDRS = fixedConfigs2.inputOutputSettings.PortDirectionS & 0xFE; // Mask the SCI0 RX pin as input between receiving
+	DDRT = 0xFC; // Set ECT pins 0,1 to IC and 2:7 to OC (8) TODO mask this dynamically based on decoder type and configured channels.
 	/* AD0DDR1 You are out of your mind if you waste this on digital Inputs */
 	/* AD1DDR1 You are out of your mind if you waste this on digital Inputs */
-#endif
 }
 
 
 /** @brief Buffer lookup tables addresses
  *
  * Save pointers to the lookup tables which live in paged flash.
- *
- * @note Many thanks to Jean Bélanger for the inspiration/idea to do this!
- *
- * @author Fred Cooke
  */
 void initLookupAddresses(){
 	IATTransferTableLocation = (void*)&IATTransferTable;
@@ -237,84 +227,72 @@ void initLookupAddresses(){
 /** @brief Buffer fuel tables addresses
  *
  * Save pointers to the fuel tables which live in paged flash.
- *
- * @note Many thanks to Jean Bélanger for the inspiration/idea to do this!
- *
- * @author Fred Cooke
  */
 void initFuelAddresses(){
 	/* Setup addresses within the page to avoid warnings */
-	VETableMainFlashLocation		= (void*)&VETableMainFlash;
-	VETableSecondaryFlashLocation	= (void*)&VETableSecondaryFlash;
-	VETableTertiaryFlashLocation	= (void*)&VETableTertiaryFlash;
-	LambdaTableFlashLocation		= (void*)&LambdaTableFlash;
-	VETableMainFlash2Location		= (void*)&VETableMainFlash2;
-	VETableSecondaryFlash2Location	= (void*)&VETableSecondaryFlash2;
-	VETableTertiaryFlash2Location	= (void*)&VETableTertiaryFlash2;
-	LambdaTableFlash2Location		= (void*)&LambdaTableFlash2;
+	VETableMainFlashLocation       = (void*)&VETableMainFlash;
+	VETableSecondaryFlashLocation  = (void*)&VETableSecondaryFlash;
+	VETableTertiaryFlashLocation   = (void*)&VETableTertiaryFlash;
+	LambdaTableFlashLocation       = (void*)&LambdaTableFlash;
+	VETableMainFlash2Location      = (void*)&VETableMainFlash2;
+	VETableSecondaryFlash2Location = (void*)&VETableSecondaryFlash2;
+	VETableTertiaryFlash2Location  = (void*)&VETableTertiaryFlash2;
+	LambdaTableFlash2Location      = (void*)&LambdaTableFlash2;
 }
 
 
 /** @brief Copy fuel tables to RAM
  *
  * Initialises the fuel tables in RAM by copying them up from flash.
- *
- * @author Fred Cooke
  */
 void initPagedRAMFuel(void){
 	/* Copy the tables from flash to RAM */
 	RPAGE = RPAGE_FUEL_ONE;
-	memcpy((void*)&TablesA,	VETableMainFlashLocation,		sizeof(mainTable));
-	memcpy((void*)&TablesB,	VETableSecondaryFlashLocation,	sizeof(mainTable));
-	memcpy((void*)&TablesC,	VETableTertiaryFlashLocation,	sizeof(mainTable));
-	memcpy((void*)&TablesD,	LambdaTableFlashLocation,		sizeof(mainTable));
+	memcpy((void*)&TablesA, VETableMainFlashLocation,       sizeof(mainTable));
+	memcpy((void*)&TablesB, VETableSecondaryFlashLocation,  sizeof(mainTable));
+	memcpy((void*)&TablesC, VETableTertiaryFlashLocation,   sizeof(mainTable));
+	memcpy((void*)&TablesD, LambdaTableFlashLocation,       sizeof(mainTable));
 	RPAGE = RPAGE_FUEL_TWO;
-	memcpy((void*)&TablesA,	VETableMainFlash2Location,		sizeof(mainTable));
-	memcpy((void*)&TablesB,	VETableSecondaryFlash2Location,	sizeof(mainTable));
-	memcpy((void*)&TablesC,	VETableTertiaryFlash2Location,	sizeof(mainTable));
-	memcpy((void*)&TablesD,	LambdaTableFlash2Location,		sizeof(mainTable));
+	memcpy((void*)&TablesA, VETableMainFlash2Location,      sizeof(mainTable));
+	memcpy((void*)&TablesB, VETableSecondaryFlash2Location, sizeof(mainTable));
+	memcpy((void*)&TablesC, VETableTertiaryFlash2Location,  sizeof(mainTable));
+	memcpy((void*)&TablesD, LambdaTableFlash2Location,      sizeof(mainTable));
 }
 
 
 /** @brief Buffer timing tables addresses
  *
  * Save pointers to the timing tables which live in paged flash.
- *
- * @note Many thanks to Jean Bélanger for the inspiration/idea to do this!
- *
- * @author Fred Cooke
  */
 void initTimingAddresses(){
 	/* Setup addresses within the page to avoid warnings */
-	IgnitionAdvanceTableMainFlashLocation			= (void*)&IgnitionAdvanceTableMainFlash;
-	IgnitionAdvanceTableSecondaryFlashLocation		= (void*)&IgnitionAdvanceTableSecondaryFlash;
-	InjectionAdvanceTableMainFlashLocation			= (void*)&InjectionAdvanceTableMainFlash;
-	InjectionAdvanceTableSecondaryFlashLocation		= (void*)&InjectionAdvanceTableSecondaryFlash;
-	IgnitionAdvanceTableMainFlash2Location			= (void*)&IgnitionAdvanceTableMainFlash2;
-	IgnitionAdvanceTableSecondaryFlash2Location		= (void*)&IgnitionAdvanceTableSecondaryFlash2;
-	InjectionAdvanceTableMainFlash2Location			= (void*)&InjectionAdvanceTableMainFlash2;
-	InjectionAdvanceTableSecondaryFlash2Location	= (void*)&InjectionAdvanceTableSecondaryFlash2;
+	IgnitionAdvanceTableMainFlashLocation        = (void*)&IgnitionAdvanceTableMainFlash;
+	IgnitionAdvanceTableSecondaryFlashLocation   = (void*)&IgnitionAdvanceTableSecondaryFlash;
+	InjectionAdvanceTableMainFlashLocation       = (void*)&InjectionAdvanceTableMainFlash;
+	InjectionAdvanceTableSecondaryFlashLocation  = (void*)&InjectionAdvanceTableSecondaryFlash;
+	IgnitionAdvanceTableMainFlash2Location       = (void*)&IgnitionAdvanceTableMainFlash2;
+	IgnitionAdvanceTableSecondaryFlash2Location  = (void*)&IgnitionAdvanceTableSecondaryFlash2;
+	InjectionAdvanceTableMainFlash2Location      = (void*)&InjectionAdvanceTableMainFlash2;
+	InjectionAdvanceTableSecondaryFlash2Location = (void*)&InjectionAdvanceTableSecondaryFlash2;
 }
 
 
 /** @brief Copy timing tables to RAM
  *
  * Initialises the timing tables in RAM by copying them up from flash.
- *
- * @author Fred Cooke
  */
 void initPagedRAMTime(){
 	/* Copy the tables from flash to RAM */
 	RPAGE = RPAGE_TIME_ONE;
-	memcpy((void*)&TablesA,	IgnitionAdvanceTableMainFlashLocation,			sizeof(mainTable));
-	memcpy((void*)&TablesB,	IgnitionAdvanceTableSecondaryFlashLocation,		sizeof(mainTable));
-	memcpy((void*)&TablesC,	InjectionAdvanceTableMainFlashLocation,			sizeof(mainTable));
-	memcpy((void*)&TablesD,	InjectionAdvanceTableSecondaryFlashLocation,	sizeof(mainTable));
+	memcpy((void*)&TablesA, IgnitionAdvanceTableMainFlashLocation,        sizeof(mainTable));
+	memcpy((void*)&TablesB, IgnitionAdvanceTableSecondaryFlashLocation,   sizeof(mainTable));
+	memcpy((void*)&TablesC, InjectionAdvanceTableMainFlashLocation,       sizeof(mainTable));
+	memcpy((void*)&TablesD, InjectionAdvanceTableSecondaryFlashLocation,  sizeof(mainTable));
 	RPAGE = RPAGE_TIME_TWO;
-	memcpy((void*)&TablesA,	IgnitionAdvanceTableMainFlash2Location,			sizeof(mainTable));
-	memcpy((void*)&TablesB,	IgnitionAdvanceTableSecondaryFlash2Location,	sizeof(mainTable));
-	memcpy((void*)&TablesC,	InjectionAdvanceTableMainFlash2Location,		sizeof(mainTable));
-	memcpy((void*)&TablesD,	InjectionAdvanceTableSecondaryFlash2Location,	sizeof(mainTable));
+	memcpy((void*)&TablesA, IgnitionAdvanceTableMainFlash2Location,       sizeof(mainTable));
+	memcpy((void*)&TablesB, IgnitionAdvanceTableSecondaryFlash2Location,  sizeof(mainTable));
+	memcpy((void*)&TablesC, InjectionAdvanceTableMainFlash2Location,      sizeof(mainTable));
+	memcpy((void*)&TablesD, InjectionAdvanceTableSecondaryFlash2Location, sizeof(mainTable));
 }
 
 
@@ -322,21 +300,17 @@ void initPagedRAMTime(){
  *
  * Save pointers to the tunable tables which live in paged flash and their
  * sub-sections too.
- *
- * @note Many thanks to Jean Bélanger for the inspiration/idea to do this!
- *
- * @author Fred Cooke
  */
 void initTunableAddresses(){
 	/* Setup addresses within the page to avoid warnings */
-	SmallTablesAFlashLocation 	= (void*)&SmallTablesAFlash;
-	SmallTablesBFlashLocation 	= (void*)&SmallTablesBFlash;
-	SmallTablesCFlashLocation 	= (void*)&SmallTablesCFlash;
-	SmallTablesDFlashLocation 	= (void*)&SmallTablesDFlash;
-	SmallTablesAFlash2Location	= (void*)&SmallTablesAFlash2;
-	SmallTablesBFlash2Location	= (void*)&SmallTablesBFlash2;
-	SmallTablesCFlash2Location	= (void*)&SmallTablesCFlash2;
-	SmallTablesDFlash2Location	= (void*)&SmallTablesDFlash2;
+	SmallTablesAFlashLocation  = (void*)&SmallTablesAFlash;
+	SmallTablesBFlashLocation  = (void*)&SmallTablesBFlash;
+	SmallTablesCFlashLocation  = (void*)&SmallTablesCFlash;
+	SmallTablesDFlashLocation  = (void*)&SmallTablesDFlash;
+	SmallTablesAFlash2Location = (void*)&SmallTablesAFlash2;
+	SmallTablesBFlash2Location = (void*)&SmallTablesBFlash2;
+	SmallTablesCFlash2Location = (void*)&SmallTablesCFlash2;
+	SmallTablesDFlash2Location = (void*)&SmallTablesDFlash2;
 
 	/* TablesA */
 	dwellDesiredVersusVoltageTableLocation    = (void*)&SmallTablesAFlash.dwellDesiredVersusVoltageTable;
@@ -351,8 +325,8 @@ void initTunableAddresses(){
 	primingVolumeTable2Location               = (void*)&SmallTablesAFlash2.primingVolumeTable;
 	engineTempEnrichmentTablePercentLocation  = (void*)&SmallTablesAFlash.engineTempEnrichmentTablePercent;
 	engineTempEnrichmentTablePercent2Location = (void*)&SmallTablesAFlash2.engineTempEnrichmentTablePercent;
-	dwellMaxVersusRPMTableLocation            = (void*)&SmallTablesAFlash.dwellMaxVersusRPMTable;
-	dwellMaxVersusRPMTable2Location           = (void*)&SmallTablesAFlash2.dwellMaxVersusRPMTable;
+	dwellVersusRPMTableLocation               = (void*)&SmallTablesAFlash.dwellVersusRPMTable;
+	dwellVersusRPMTable2Location              = (void*)&SmallTablesAFlash2.dwellVersusRPMTable;
 
 	/* TablesB */
 	loggingSettingsLocation       = (void*)&SmallTablesBFlash.loggingSettings;
@@ -384,10 +358,10 @@ void initTunableAddresses(){
 void initPagedRAMTune(){
 	/* Copy the tables from flash to RAM */
 	RPAGE = RPAGE_TUNE_ONE;
-	memcpy((void*)&TablesA,	SmallTablesAFlashLocation,	sizeof(mainTable));
-	memcpy((void*)&TablesB,	SmallTablesBFlashLocation,	sizeof(mainTable));
-	memcpy((void*)&TablesC,	SmallTablesCFlashLocation,	sizeof(mainTable));
-	memcpy((void*)&TablesD,	SmallTablesDFlashLocation,	sizeof(mainTable));
+	memcpy((void*)&TablesA, SmallTablesAFlashLocation, sizeof(mainTable));
+	memcpy((void*)&TablesB, SmallTablesBFlashLocation, sizeof(mainTable));
+	memcpy((void*)&TablesC, SmallTablesCFlashLocation, sizeof(mainTable));
+	memcpy((void*)&TablesD, SmallTablesDFlashLocation, sizeof(mainTable));
 	RPAGE = RPAGE_TUNE_TWO;
 	// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&& WARNING &&&&&&&&&&&&&&&&&&&&&&&&&&&&&& //
 	//    You will get garbage if you use table switching at this time!!!    //
@@ -397,10 +371,10 @@ void initPagedRAMTune(){
 	//memcpy(xgateSchedRAMAddress, xgateSchedFlashAddress, (xgateSchedEnd - xgateSched));
 	//memcpy(xgateInjectorsOnRAMAddress, xgateInjectorsOnFlashAddress, (xgateInjectorsOnEnd - xgateInjectorsOn));
 	//memcpy(xgateInjectorsOffRAMAddress, xgateInjectorsOffFlashAddress, (xgateInjectorsOffEnd - xgateInjectorsOff));
-//	memcpy((void*)&TablesA,	SmallTablesAFlash2Location,	sizeof(mainTable));
-//	memcpy((void*)&TablesB,	SmallTablesBFlash2Location,	sizeof(mainTable));
-//	memcpy((void*)&TablesC,	SmallTablesCFlash2Location,	sizeof(mainTable));
-//	memcpy((void*)&TablesD,	SmallTablesDFlash2Location,	sizeof(mainTable));
+//	memcpy((void*)&TablesA,	SmallTablesAFlash2Location, sizeof(mainTable));
+//	memcpy((void*)&TablesB,	SmallTablesBFlash2Location, sizeof(mainTable));
+//	memcpy((void*)&TablesC,	SmallTablesCFlash2Location, sizeof(mainTable));
+//	memcpy((void*)&TablesD,	SmallTablesDFlash2Location, sizeof(mainTable));
 }
 
 
@@ -414,8 +388,6 @@ void initPagedRAMTune(){
  * prevent those warnings.
  *
  * @note Many thanks to Jean Bélanger for the inspiration/idea to do this!
- *
- * @author Fred Cooke
  */
 void initAllPagedAddresses(){
 	/* Setup pointers to lookup tables */
@@ -436,8 +408,6 @@ void initAllPagedAddresses(){
  *
  * This function is simply a delegator to the ones for each flash page. Each
  * one lives in the same paged space as the data it is copying up.
- *
- * @author Fred Cooke
  */
 void initAllPagedRAM(){
 	/* Setup the flash block pointers before copying flash to RAM using them */
@@ -454,7 +424,7 @@ void initAllPagedRAM(){
 
 
 /* Initialise and set up all running variables that require a non-zero start value here */
-/* All other variables are initialised to zero by the premain built in code				*/
+/* All other variables are initialised to zero by the premain built in code             */
 void initVariables(){
 	/* And the opposite for the other halves */
 	CoreVars = &CoreVars0;
@@ -538,9 +508,9 @@ void initVariables(){
  *          damage your flash module or get corrupt data written to it.
  */
 void initFlash(){
-	FCLKDIV = 0x4A;                  	/* Set the flash clock frequency	*/
-	FPROT = 0xFF;                    	/* Disable all flash protection 	*/
-	FSTAT = FSTAT | (PVIOL | ACCERR);	/* Clear any errors             	*/
+	FCLKDIV = 0x4A;                   /* Set the flash clock frequency */
+	FPROT = 0xFF;                     /* Disable all flash protection  */
+	FSTAT = FSTAT | (PVIOL | ACCERR); /* Clear any errors              */
 }
 
 
@@ -563,7 +533,6 @@ void initECTTimer(){
 	// TODO rearrange the order of this stuff and pull enable and interrupt enable out to the last function call of init.
 
 
-#ifndef NO_INIT
 	/* Timer channel interrupts */
 	TIE = 0x03; /* 0,1 IC interrupts enabled for reading engine position and RPM, 6 OC channels disabled such that no injector switching happens till scheduled */
 	TFLG = ONES; /* Clear all the flags such that we are up and running before they first occur */
@@ -598,14 +567,11 @@ void initECTTimer(){
 //	MCFLG = 0x80; // clear the flag up front
 
 	decoderInitPreliminary();
-#endif
 }
 
 
 /* Configure the PIT timers for their various uses. */
 void initPITTimer(){
-#ifndef NO_INIT
-//	/*  */
 //	// set micro periods
 //	PITMTLD0 = 0x1F; /* 32 prescaler gives 0.8uS resolution and max period of 52.4288ms measured */
 //	PITMTLD1 = 0x1F; /* ditto */
@@ -621,7 +587,6 @@ void initPITTimer(){
 //	PITINTE = 0x01;
 //	// clear flags
 //	//PITFLT = ONES;
-#endif
 }
 
 /* Setup the sci module(s) that we need to use. */
@@ -675,47 +640,15 @@ void initConfiguration(){
 
 	/* Add in tunable physical parameters at boot time TODO move to init.c TODO duplicate for secondary fuel? or split somehow?
 	 *nstant = ((masterConst * perCylinderVolume) / (stoichiometricAFR * injectorFlow));
-	 *nstant = ((139371764	 * 16384			) / (15053			   * 4096		 ));
+	 *nstant = ((139371764 * 16384) / (15053 * 4096));
 	 * OR
 	 *nstant = ((masterConst / injectorFlow) * perCylinderVolume) / stoichiometricAFR;
-	 *nstant = ((139371764	 / 4096		   ) * 16384			) / 15053			 ;
+	 *nstant = ((139371764 /  4096) * 16384) / 15053;
 	 * http://duckduckgo.com/?q=%28%28139371764++%2F+4096%29+*+16384%29+%2F+15053 */
 	bootFuelConst = ((unsigned long)(masterFuelConstant / fixedConfigs1.engineSettings.injectorFlow) * fixedConfigs1.engineSettings.perCylinderVolume) / fixedConfigs1.engineSettings.stoichiometricAFR;
 
-	/* The MAP range used to convert fake TPS from MAP and vice versa */
-	TPSMAPRange = fixedConfigs2.sensorRanges.TPSOpenMAP - fixedConfigs2.sensorRanges.TPSClosedMAP;
-
 	/* The ADC range used to generate TPS percentage */
 	TPSADCRange = fixedConfigs2.sensorRanges.TPSMaximumADC - fixedConfigs2.sensorRanges.TPSMinimumADC;
-
-
-	/* Use like flags for now, just add one for each later */
-	unsigned char cumulativeConfigErrors = 0;
-
-	/* Check various aspects of config which will cause problems */
-
-	/* BRV max bigger than variable that holds it */
-	if(((unsigned long)fixedConfigs2.sensorRanges.BRVMinimum + fixedConfigs2.sensorRanges.BRVRange) > 65535){
-		//sendError(BRV_MAX_TOO_LARGE);
-		cumulativeConfigErrors++;
-	}
-
-	// TODO check all critical variables here!
-
-	/*
-	 * check ignition settings for range etc, possibly check some of those on the fly too
-	 * check fuel settings for being reasonable
-	 * check all variable tables for correct sizing
-	 * etc
-	 */
-
-	while(cumulativeConfigErrors > 0){
-		sleep(1000);
-		/// @todo TODO send an async error of some sort here, perhaps upgrade errors to handle args for this purpose, or perhaps send an async error for each error, inc this var, then send a "errors occurred, reset and listen to see what they were" packet?
-		//send("There were ");
-		//sendUC(cumulativeConfigErrors);
-		//send(" config errors, init aborted!");
-	} /// @todo TODO ensure that we can recieve config and settings via serial while this is occuring! If not a bad config will lock us out all together.
 }
 
 
@@ -730,16 +663,13 @@ void initInterrupts(){
 	CRGINT |= 0x80; /* Enable the RTI */
 	CRGFLG = 0x80; /* Clear the RTI flag */
 
-#ifndef NO_INIT
 	// set up port H for testing
 	PPSH = ZEROS; // falling edge/pull up for all
 	PIEH = ONES; // enable all pins interrupts
 	PIFH = ONES; // clear all port H interrupt flags
-#endif
 
 	// TODO set up irq and xirq for testing
 	// IRQCR for IRQ
-	//
 
 	/* VReg API setup (only for wait mode? i think so) */
 //	VREGAPIR = 0x09C3; /* For 500ms period : (500ms - 0.2ms) / 0.2ms = 0b100111000011 = 2499 */

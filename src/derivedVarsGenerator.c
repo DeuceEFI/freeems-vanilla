@@ -31,8 +31,6 @@
  * @brief Generate the derived variables.
  *
  * Second level variables are derived from the core variables and generated here.
- *
- * @author Fred Cooke
  */
 
 
@@ -45,25 +43,21 @@
 #include "inc/decoderInterface.h"
 
 
-/** @brief Generate the derived variables.
- *
- * This function uses the core variables to lookup and calculate further second
+/**
+ * Use core variables to lookup and calculate the derived variables. This
+ * function uses the core variables to lookup and calculate further second
  * order variables such as load, VE, Lamdda, Transient fuel correction, engine
  * temperature enrichment, Injector dead time, etc.
- *
- * @author Fred Cooke
  */
 void generateDerivedVars(){
-	/*&&&&&&&&&&&&&&&&&&&& Use basic variables to lookup and calculate derived variables &&&&&&&&&&&&&&&&&&&*/
-
-
 	/* Determine load based on options */
-	if(TRUE){ /* Use MAP as load */
+	if(!(fixedConfigs2.algorithmSettings.loadType)){ /* Use MAP as load */
 		DerivedVars->LoadMain = CoreVars->MAP;
-	}else if(FALSE){ /* Use TPS as load */
+	}else if(fixedConfigs2.algorithmSettings.loadType == LOAD_TPS){ /* Use TPS as load */
 		DerivedVars->LoadMain = CoreVars->TPS;
-	}else if(FALSE){ /* Use AAP corrected MAP as load */
+	}else if(fixedConfigs2.algorithmSettings.loadType == LOAD_AAP){ /* Use AAP corrected MAP as load */
 		DerivedVars->LoadMain = ((unsigned long)CoreVars->MAP * CoreVars->AAP) / KPA(100);
+		// TODO add maf calc load option here
 	}else{ /* Default to MAP, but throw error */
 		DerivedVars->LoadMain = CoreVars->MAP;
 		/* If anyone is listening, let them know something is wrong */
@@ -82,8 +76,16 @@ void generateDerivedVars(){
 	/* Look up injector dead time with battery voltage */
 	DerivedVars->IDT = lookupTwoDTableUS((twoDTableUS*)&TablesA.SmallTablesA.injectorDeadTimeTable, CoreVars->BRV);
 
-	// temp dwell and advance vars...
-	DerivedVars->Dwell = lookupTwoDTableUS((twoDTableUS*)&TablesA.SmallTablesA.dwellDesiredVersusVoltageTable, CoreVars->BRV);
+	if(!(fixedConfigs2.algorithmSettings.dwellType)){
+		DerivedVars->Dwell = lookupTwoDTableUS((twoDTableUS*)&TablesA.SmallTablesA.dwellDesiredVersusVoltageTable, CoreVars->BRV);
+	}else if(fixedConfigs2.algorithmSettings.dwellType == DWELL_RPM){
+		DerivedVars->Dwell = lookupTwoDTableUS((twoDTableUS*)&TablesA.SmallTablesA.dwellVersusRPMTable, CoreVars->RPM);
+	}else if(fixedConfigs2.algorithmSettings.dwellType == DWELL_FIXED){
+		DerivedVars->Dwell = fixedConfigs2.algorithmSettings.dwellFixedPeriod;
+	}else{
+		DerivedVars->Dwell = 0;
+	}
+
 	unsigned long tempAdvance = ANGLE_FACTOR * (unsigned long)lookupMainTable(CoreVars->RPM, DerivedVars->LoadMain, IgnitionAdvanceTableMainLocationID);
 	DerivedVars->Advance = (unsigned short)(tempAdvance / 1024); // This calculation will change when the timing tables get shrunk to a more reasonable 8 bit size with appropriate scaling
 	// Move this magic number to an appropriate place and/or refactor timing calcs/values/etc
@@ -94,7 +96,7 @@ void generateDerivedVars(){
 // max % dwell
 // minimum spark time
 // a setting to choose which behaviour (don't limit/% dwell limit/min spark time/other?)
-#ifdef HOTEL
+#if CONFIG == HOTEL_ID
 	/// @bug hack for hyundai! 135 = 3/4 of 180 = one cycle...
 	unsigned long threeQuartersOfAvailableTime = ((unsigned long)CoreVars->DRPM * 135 * ANGLE_FACTOR) / ticks_per_degree_multiplier;
 	if(DerivedVars->Dwell > threeQuartersOfAvailableTime){
@@ -135,6 +137,4 @@ void generateDerivedVars(){
 		DerivedVars->TFCTotal = 0;
 		/* Don't throw error as correction may not be required */
 	}
-
-	/*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 }

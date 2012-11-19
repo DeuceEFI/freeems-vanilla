@@ -30,8 +30,8 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_COMMS_CORE_H_SEEN
 #define FILE_COMMS_CORE_H_SEEN
 
@@ -68,7 +68,7 @@ EXTERN void sendDebugIfClear(unsigned char*) FPAGE_FE;
 EXTERN void resetReceiveState(unsigned char) FPAGE_FE;
 EXTERN void finaliseAndSend(unsigned short) FPAGE_FE;
 
-EXTERN void populateBasicDatalog(void) FPAGE_FE;
+EXTERN unsigned short populateBasicDatalog(void) FPAGE_FE;
 
 
 /* Global variables for TX (one set per interface) */

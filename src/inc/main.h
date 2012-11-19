@@ -30,8 +30,8 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_MAIN_H_SEEN
 #define FILE_MAIN_H_SEEN
 
@@ -48,6 +48,7 @@
 #include "outputScheduler.h"
 #include "decoderInterface.h"
 #include "tableLookup.h"
+#include "simpleGPIO.h"
 
 
 /* Computer Operating Properly reset sequence MC9S12XDP512V2.PDF Section 2.4.1.5 */

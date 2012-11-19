@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -60,33 +60,26 @@
 
 const volatile SmallTables1 SmallTablesAFlashV  TUNETABLESDV1 = {
 
-#if SEANKLT1
 		dwellDesiredVersusVoltageTable: {
-			Axis:   ARRAY_OF_16_VOLTAGES,
-			Values: { T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00),  T(2.00)}
-		},
-#elif SNOTROCKET
-		dwellDesiredVersusVoltageTable: {
+#if CONFIG == SNOTROCKET_ID
 			Axis:   ARRAY_OF_16_VOLTAGES,
 			Values: { T(7.90),  T(7.90),  T(7.90),  T(7.90),  T(7.90),  T(7.35),  T(6.95),  T(6.50),  T(6.15),  T(5.75),  T(5.48),  T(5.20),  T(4.95),  T(3.80),  T(2.85),  T(2.00)}
-		},
-#elif HOTEL
-		dwellDesiredVersusVoltageTable: {
+#elif CONFIG == HOTEL_ID
 			Axis:   ARRAY_OF_16_VOLTAGES,
 			Values: {T(29.10), T(23.00), T(18.60), T(17.00), T(15.80), T(14.70), T(13.90), T(13.00), T(12.30), T(11.50), T(10.96), T(10.40),  T(9.90),  T(7.60),  T(5.70),  T(4.00)}
-		},
+#elif CONFIG == DEUCECOUPE_ID
+			Axis:   ARRAY_OF_16_VOLTAGES,
+			Values: { T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00)}
+#elif CONFIG == DEUCES10_ID
+			Axis:   ARRAY_OF_16_VOLTAGES,
+			Values: { T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00)}
 #else
-		dwellDesiredVersusVoltageTable: {
 			Axis:   ARRAY_OF_16_VOLTAGES,
 			Values: ARRAY_OF_16_DWELLS
-		},
 #endif
-
-#if JOSHBROWN
-		injectorDeadTimeTable: {
-			Axis:   ARRAY_OF_16_VOLTAGES,
-			Values: {T(6.40), T(5.06), T(4.09), T(3.74), T(3.48), T(3.23), T(3.06), T(2.86), T(2.71), T(2.53), T(2.41), T(2.29), T(2.18), T(1.67), T(1.25), T(0.88)}
 		},
+
+#if 0
 #else
 		injectorDeadTimeTable: {
 			Axis: ARRAY_OF_16_VOLTAGES,
@@ -103,7 +96,7 @@ const volatile SmallTables1 SmallTablesAFlashV  TUNETABLESDV1 = {
 		},
 		engineTempEnrichmentTableFixed: { // TODO YAGNI currently unused
 			Axis:   ARRAY_OF_16_TEMPS,
-			Values: ARRAY_OF_16_ZEROS
+			Values: ARRAY_OF_16_PERCENTS
 		},
 		primingVolumeTable: {
 			Axis:   ARRAY_OF_16_TEMPS,
@@ -113,9 +106,9 @@ const volatile SmallTables1 SmallTablesAFlashV  TUNETABLESDV1 = {
 			Axis:   ARRAY_OF_16_TEMPS,
 			Values: ARRAY_OF_16_PERCENTS
 		},
-		dwellMaxVersusRPMTable: {         // TODO YAGNI currently unused
+		dwellVersusRPMTable: {
 			Axis:   ARRAY_OF_16_RPMS,
-			Values: ARRAY_OF_16_DWELLS
+			Values: ARRAY_OF_16_DIS6_DWELLS
 		},
 		filler: {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -140,7 +133,22 @@ const volatile SmallTables2 SmallTablesBFlashV TUNETABLESDV2 = {
 		loggingSettings: {
 			datalogStreamType:                    asyncDatalogBasic,
 			datalogPollingType:                   asyncDatalogBasic,
-			basicDatalogLength:                   maxBasicDatalogLength,
+			firstChunk: 0,
+			numberOfChunks: 3,
+			logChunks: {
+				[0] = {
+					address: &CoreVars0,
+					size: sizeof(CoreVar)
+				},
+				[1] = {
+					address: &DerivedVars0,
+					size: sizeof(DerivedVar)
+				},
+				[2] = {
+					address: &KeyUserDebugs,
+					size: sizeof(KeyUserDebug)
+				}
+			},
 			datalogByteStreamSourceAddress:       (void*)&PTIT,     // Port T state for default
 			datalogWordStreamSourceAddress:       (void*)&ATD0DR4,  // MAP sensor for default
 			datalogLongStreamSourceAddressFirst:  (void*)&PORTS_BA, // Port B and A combined with...
@@ -148,8 +156,6 @@ const volatile SmallTables2 SmallTablesBFlashV TUNETABLESDV2 = {
 		},
 		perCylinderFuelTrims: {32768, 32768, 32768, 32768, 32768, 32768}, // TODO YAGNI unused, format could change
 		filler: {0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

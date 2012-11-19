@@ -47,7 +47,6 @@
  * @todo TODO bring this up to date and/or find a better way to do it.
  *
  * @param uniqueLossID 0 is reserved for system use, within your decoder never use the same value twice.
- * @author Fred Cooke
  */
 void resetToNonRunningState(unsigned char uniqueLossID){
 	if(uniqueLossID){
@@ -80,7 +79,6 @@ void resetToNonRunningState(unsigned char uniqueLossID){
 
 /** Schedule an ignition output event on port T
  *
- * @author Fred Cooke
  * @warning If you do not handle the skipEventFlags then excess advance may occur!
  */
 void schedulePortTPin(unsigned char outputEventNumber, LongTime timeStamp){
@@ -100,7 +98,7 @@ void schedulePortTPin(unsigned char outputEventNumber, LongTime timeStamp){
 	/// @todo TODO Make this more understandable as right now it is difficult to grok.
 	// determine whether or not to reschedule or self schedule assuming pin is currently scheduled
 	unsigned long diff = (injectorMainEndTimes[pin] + injectorSwitchOffCodeTime) - startTimeLong;
-#define newStartIsAfterOutputEndTimeAndCanSelfSet	(diff > LONGHALF)
+#define newStartIsAfterOutputEndTimeAndCanSelfSet (diff > LONGHALF)
 // http://forum.diyefi.org/viewtopic.php?f=8&t=57&p=861#p861
 
 /*

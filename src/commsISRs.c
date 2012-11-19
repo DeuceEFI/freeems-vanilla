@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -37,8 +37,6 @@
  * and outside this file. Some additional helper functions are also kept here.
  *
  * @todo TODO SCI0ISR() needs to be split into some hash defines and an include file that formats it to be the ISR for a specific channel.
- *
- * @author Fred Cooke
  */
 
 
@@ -50,16 +48,14 @@
 #include "inc/commsISRs.h"
 
 
-/* The C89 standard is used in the 3.3.6 GCC compiler, please	*
- * see the following URL for more info on inline functions :	*
- * http://gcc.gnu.org/onlinedocs/gcc-3.3.6/Inline.html#Inline	*/
+/* The C89 standard is used in the 3.3.6 GCC compiler, please *
+ * see the following URL for more info on inline functions :  *
+ * http://gcc.gnu.org/onlinedocs/gcc-3.3.6/Inline.html#Inline */
 
 
 /** @brief Reset Receive State
  *
  * Reset communications reception to the state provided.
- *
- * @author Fred Cooke
  *
  * @todo TODO this is in the wrong file!! Either move the header declaration or move the function!
  *
@@ -75,8 +71,8 @@ void resetReceiveState(unsigned char sourceIDState){
 	/* Set the source ID state (clear all or all but one flag(s)) */
 	RXBufferContentSourceID = sourceIDState;
 
-	/* Which ever interface we are setting is the one we came from. By definition	*/
-	/* it must be on and we want it to stay on, so just turn off all the others.	*/
+	/* Which ever interface we are setting is the one we came from. By definition */
+	/* it must be on and we want it to stay on, so just turn off all the others.  */
 	if(sourceIDState & COM_SET_SCI0_INTERFACE_ID){
 		/* Turn off all others here */
 		/// @todo TODO CAN0CTL1 &= CANCTL1_RX_DISABLE;
@@ -106,8 +102,6 @@ void resetReceiveState(unsigned char sourceIDState){
  * appropriately. Its functions are to send raw bytes out over the wire from a
  * buffer and to receive bytes from the wire un-escape them, checksum them and
  * store them in a buffer.
- *
- * @author Fred Cooke
  *
  * @todo TODO Move this code into an include file much like the fuel interrupts such that it can be used for multiple UART SCI devices without duplication.
  * @todo TODO Fix the init code such that this doesn't run at boot without a serail device attached. Clear buffer maybe? or flag clearing/isr enabling ordering?

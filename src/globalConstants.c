@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -56,7 +56,7 @@ const unsigned char interfaceVersion[INTERFACE_VERSION_LENGTH] = { INTERFACE_VER
  *
  * This should change every time the code is changed at all (even a little) before each release.
  */
-const unsigned char firmwareVersion[FIRMWARE_VERSION_LENGTH] = { FIRMWARE_VERSION }; // TODO shorten the comments here, add docs and refer to them
+const unsigned char firmwareVersion[FIRMWARE_VERSION_LENGTH] = { FIRMWARE_VERSION "-" BUILD_CONFIG }; // TODO shorten the comments here, add docs and refer to them
 const unsigned char buildTimeAndDate[FIRMWARE_BUILD_DATE_LENGTH] = { FIRMWARE_BUILD_DATE }; ///< GCC supplied compiler version
 const unsigned char compilerVersion[COMPILER_VERSION_LENGTH] = { __VERSION__ };             ///< GCC supplied compiler version
 const unsigned char operatingSystem[OPERATING_SYSTEM_LENGTH] = { OPERATING_SYSTEM };        ///< Operating system type
@@ -78,7 +78,7 @@ const unsigned char operatingSystem[OPERATING_SYSTEM_LENGTH] = { OPERATING_SYSTE
  * TODO hash define the fuel constant for different clock tick setups (msToTicks will vary)
  *
  * master = (msToTicks * molarMassOfAir * universalGasConstantDivisor * stoichiometricAFRDivisor * injectorFlowTotalDivisor) / (universalGasConstant * molarMassOfAirDivisor * perCylinderVolumeDivisor);
- * master = (1250	   * 2897			* 4096						  * 1024				     * 1024000				   ) / (34056				 * 100					 * 32768				   );
+ * master = (1250      * 2897           * 4096                        * 1024                     * 1024000                 ) / (34056                * 100                   * 32768                   );
  * http://duckduckgo.com/?q=%28%281250+*+2897+*+4096+*+1024+*+1024000%29+%2F+%2834056+*++100+*+32768%29
  *
  * ((1250 * 2897 * 4096 * 1024 * 1024000) / (34056 *  100 * 32768) = 139371764

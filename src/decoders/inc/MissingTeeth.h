@@ -1,26 +1,27 @@
-/*	FreeEMS - the open source engine management system
-
-	Copyright 2011-2012 Fred Cooke
-
-	This file is part of the FreeEMS project.
-
-	FreeEMS software is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	FreeEMS software is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with any FreeEMS software.  If not, see http://www.gnu.org/licenses/
-
-	We ask that if you make any changes to this file you email them upstream to
-	us at admin(at)diyefi(dot)org or, even better, fork the code on github.com!
-
-	Thank you for choosing FreeEMS to run your engine! */
+/* FreeEMS - the open source engine management system
+ *
+ * Copyright 2011-2012 Fred Cooke
+ *
+ * This file is part of the FreeEMS project.
+ *
+ * FreeEMS software is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FreeEMS software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with any FreeEMS software.  If not, see http://www.gnu.org/licenses/
+ *
+ * We ask that if you make any changes to this file you email them upstream to
+ * us at admin(at)diyefi(dot)org or, even better, fork the code on github.com!
+ *
+ * Thank you for choosing FreeEMS to run your engine!
+ */
 
 
 /** @file
@@ -101,10 +102,6 @@ typedef union {
 #if ((defined(CRANK_ONLY) && defined(CAM_ONLY)) || (defined(CRANK_ONLY) && defined(CRANK_WITH_CAM_SYNC)) || (defined(CRANK_WITH_CAM_SYNC) && defined(CAM_ONLY)))
 #error "Can not be cam and crank, choose one!"
 #endif
-
-
-// Make current tolerance scheme work properly for different missing levels OOTB
-#define TOLERANCE_LEVEL (MISSING_TEETH*1024)
 
 
 #if defined(CRANK_ONLY)
@@ -463,9 +460,6 @@ E0 // Always this event...
 // degree cycle and duplicating the events with 360 offset is not necessary.
 #ifndef CAM_ONLY
 ,E0_2
-// The following ifs are not strictly necessary as the array is only read up to
-// where it should be read, and the balance, which would otherwise be random
-// values in flash, are ignored. However it is consistent.
 #if (NUMBER_OF_WHEEL_EVENTS > 1)
 ,E1_2
 #if (NUMBER_OF_WHEEL_EVENTS > 2)

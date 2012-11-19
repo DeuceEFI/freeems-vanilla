@@ -36,13 +36,11 @@
  * constant declarations, all type definitions and all global variables. Other
  * variables that are actually in global space but only shared between a few
  * select files should be placed in the header for the main file that uses them.
- *
- * @author Fred Cooke
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_FREEEMS_H_SEEN
 #define FILE_FREEEMS_H_SEEN
 
@@ -247,7 +245,7 @@ EXTERN unsigned char currentTimeRPage;
 //EXTERN twoDTableUS* engineTempEnrichmentTableFixed;
 //EXTERN twoDTableUS* primingVolumeTable;
 //EXTERN twoDTableUS* engineTempEnrichmentTablePercent;
-//EXTERN twoDTableUS* dwellMaxVersusRPMTable;
+//EXTERN twoDTableUS* dwellVersusRPMTable;
 /* Pointers to SmallTablesB */
 /* Pointers to SmallTablesC */
 /* Pointers to SmallTablesD */
@@ -256,9 +254,7 @@ EXTERN unsigned char currentTimeRPage;
 /* Output variables (init not required) TODO ditch this in favour of the real vars in the calcs function and struct */
 extern unsigned short masterPulseWidth;
 EXTERN unsigned long bootFuelConst;  /* constant derived from configurable constants */
-EXTERN unsigned short TPSMAPRange;   /* The MAP range used to convert fake TPS from MAP and vice versa */
 EXTERN unsigned short TPSADCRange;   /* The ADC range used to generate TPS percentage */
-EXTERN unsigned short boundedTPSADC; // temp to view to debug
 
 
 /* ALL STATUS STUFF HERE */

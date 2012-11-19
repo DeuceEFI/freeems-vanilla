@@ -43,24 +43,30 @@
 /// @copydoc fixedConfig1
 const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 	engineSettings:{
-#ifdef TRUCK
+#if CONFIG == TRUCK_ID
 		perCylinderVolume:  CYLINDER_VOLUME(500),
 		injectorFlow:       CC_PER_MINUTE(550), // RX7 "550" which em_knaps had tested at 650cc
-#elif PRESTO
+#elif CONFIG == PRESTO_ID
 		perCylinderVolume:  CYLINDER_VOLUME(400),
 		injectorFlow:       CC_PER_MINUTE(213),
-#elif SEANKLT1
+#elif CONFIG == SEANKLT1_ID
 		perCylinderVolume:  CYLINDER_VOLUME(727),
 		injectorFlow:       CC_PER_MINUTE(525),
-#elif SEANKR1
+#elif CONFIG == SEANKR1
 		perCylinderVolume:  CYLINDER_VOLUME(250),
 		injectorFlow:       CC_PER_MINUTE(230), // http://www.witchhunter.com/flowdatapix/bcdh210.jpg
-#elif JOSHBROWN
-		perCylinderVolume:  CYLINDER_VOLUME(575),
-		injectorFlow:       CC_PER_MINUTE(1600),
-#elif SLATER
+#elif CONFIG == SLATER_ID
 		perCylinderVolume:  CYLINDER_VOLUME(324),
 		injectorFlow:       CC_PER_MINUTE(320),
+#elif CONFIG == PETERJSERIES_ID
+		perCylinderVolume:  CYLINDER_VOLUME(585),
+		injectorFlow:       CC_PER_MINUTE(320),
+#elif CONFIG == DEUCECOUPE_ID
+		perCylinderVolume:  CYLINDER_VOLUME(522),
+		injectorFlow:       CC_PER_MINUTE(235),
+#elif CONFIG == DEUCES10_ID
+		perCylinderVolume:  CYLINDER_VOLUME(548),
+		injectorFlow:       CC_PER_MINUTE(235),
 #else
 		perCylinderVolume:  CYLINDER_VOLUME(500),
 		injectorFlow:       CC_PER_MINUTE(550),
@@ -74,9 +80,9 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		// http://duckduckgo.com/?q=22+%2F+%28%2840000000%2F16%29%2F115200%29 1.376% error in speed
 	},
 	coarseBitBangSettings:{
-#ifdef SNOTROCKET // 24 events for a 24+1 CAS setup with 4 cylinder tacho
+#if CONFIG == SNOTROCKET_ID // 24 events for a 24+1 CAS setup with 4 cylinder tacho
 		outputActions:      {1,0,0,2,0,0,1,0,0,2,0,0,1,0,0,2,0,0,1,0,0,2,0,0},
-#elif SLATER // 11 events for 12-1 crank setup with 4 cylinder tacho
+#elif CONFIG == SLATER_ID // 11 events for 12-1 crank setup with 4 cylinder tacho
 		outputActions:      {1,0,0,2,0,0,1,0,0,2,0},
 #else
 		outputActions:      standardTachoArray,
@@ -88,7 +94,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 	schedulingSettings:{
 // Sadly, FreeEMS car numero uno is gone, RIP Volvo! http://forum.diyefi.org/viewtopic.php?f=55&t=1068
 
-#ifdef TRUCK // Fred's Ford Courier http://forum.diyefi.org/viewtopic.php?f=55&t=1069
+#if CONFIG == TRUCK_ID // Fred's Ford Courier http://forum.diyefi.org/viewtopic.php?f=55&t=1069
 		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)},
 		outputEventPinNumbers:       {0,1,2,3,4,5,4,5}, // COP and semi-sequential
 		schedulingConfigurationBits: {0,0,0,0,1,1,1,1}, // First four ignition, last four fuel
@@ -96,7 +102,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:              8, // Migrated to new way
 		numberOfInjectionsPerEngineCycle:            2  // Used to be batch, dead time being wrong could have affected AFRs
 
-#elif HOTEL // Fred's Hotel Hyundai (Stellar) http://forum.diyefi.org/viewtopic.php?f=55&t=1086
+#elif CONFIG == HOTEL_ID // Fred's Hotel Hyundai (Stellar) http://forum.diyefi.org/viewtopic.php?f=55&t=1086
 		anglesOfTDC:             {ANGLE(0)}, // Simple dual edge dizzy
 		outputEventPinNumbers:          {0}, // First pin
 		schedulingConfigurationBits:    {0}, // Ignition only
@@ -104,7 +110,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:   1, // One per decoder cycle = 4
 		numberOfInjectionsPerEngineCycle: 1  // Ditto
 
-#elif PRESTO // Preston's silver-top-on-a-stand http://forum.diyefi.org/viewtopic.php?f=55&t=1101
+#elif CONFIG == PRESTO_ID // Preston's silver-top-on-a-stand http://forum.diyefi.org/viewtopic.php?f=55&t=1101
 		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)},
 		outputEventPinNumbers:       {0,1,0,1,4,5,4,5}, // Wasted spark, semi-sequential TODO migrate this to sequential
 		schedulingConfigurationBits: {0,0,0,0,1,1,1,1}, // First four ignition, last four injection
@@ -112,7 +118,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:              8, // See two lines above
 		numberOfInjectionsPerEngineCycle:            2  // Semi-sequential, for now.
 
-#elif SEANKLT1 // http://forum.diyefi.org/viewtopic.php?f=55&t=1146
+#elif CONFIG == SEANKLT1_ID // http://forum.diyefi.org/viewtopic.php?f=55&t=1146
 		anglesOfTDC: {ANGLE(0), ANGLE(90), ANGLE(180), ANGLE(270), ANGLE(360), ANGLE(450), ANGLE(540), ANGLE(630), ANGLE(0), ANGLE(90), ANGLE(180), ANGLE(270), ANGLE(360), ANGLE(450), ANGLE(540), ANGLE(630)},
 		outputEventPinNumbers:       {0,0,0,0,0,0,0,0,2,3,4,5,2,3,4,5}, // LTCC e-dizzy, semi-sequential injection 1/6, 8/5, 4/7, 3/2, and repeat
 		schedulingConfigurationBits: {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1}, // See below two lines
@@ -120,33 +126,23 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:             16, // First half ignition, second half injection
 		numberOfInjectionsPerEngineCycle:            2  // Full sync semi-sequential
 
-#elif JOSHBROWN // Josh's 2.3 turbo volvo with 1600cc injectors making shit loads of power etc. Never ran, but nearly... hw issues
-		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)},
-		outputEventPinNumbers:       {0,1,0,1,2,3,4,5}, // Wasted spark setup with full sync AND sequential
-		schedulingConfigurationBits: {0,0,0,0,1,1,1,1}, // ignition = 0, injection = 1
-		decoderEngineOffset:             ANGLE(570.00), // May not be perfect, had ignitor/Puma issues... Stockish Volvo B230FT with DSM/Miata CAS + 24+1 disk.
-		numberOfConfiguredOutputEvents:              8, // First half ignition, second half injection
-		numberOfInjectionsPerEngineCycle:            1  // Sequential
-
-//#elif MARCOSFIAT // No config available for this vehicle. http://forum.diyefi.org/viewtopic.php?f=55&t=1303
-
-#elif SNOTROCKET // http://forum.diyefi.org/viewtopic.php?f=3&t=1263 Sim's 2.1 Volvo, carbed with CNP using LS1 coils.
+#elif CONFIG == SNOTROCKET_ID // http://forum.diyefi.org/viewtopic.php?f=3&t=1263 Sim's 2.1 Volvo, carbed with CNP using LS1 coils.
 		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)}, // 1,2,3,4: Firing order: 1-3-4-2 set up in loom
 		outputEventPinNumbers:           {0,1,2,3}, // COP/CNP ignition only
 		schedulingConfigurationBits:     {0,0,0,0}, // All ignition
-		decoderEngineOffset:         ANGLE(482.00), // Volvo B21A with DSM/Miata CAS + 24and1 disk
+		decoderEngineOffset:         ANGLE(566.00), // Volvo B21A with DSM/Miata CAS + 24and1 disk
 		numberOfConfiguredOutputEvents:          4, // COP setup
 		numberOfInjectionsPerEngineCycle:        1  // Ditto
 
-#elif SPUDMN // http://forum.diyefi.org/viewtopic.php?f=55&t=1507 Spudmn's mk1 racing mini in NZ :-)
+#elif CONFIG == SPUDMN_ID // http://forum.diyefi.org/viewtopic.php?f=55&t=1507 Spudmn's mk1 racing mini in NZ :-)
 		anglesOfTDC: {ANGLE(0), ANGLE(180)}, // 1 and 4, 2 and 3
 		outputEventPinNumbers:               {0,1}, // Ignition only
 		schedulingConfigurationBits:         {0,0}, // Ditto
-		decoderEngineOffset:           ANGLE(0.00), // Yet to be checked with timing light
+		decoderEngineOffset:           ANGLE(5.00), // To verify from source build!
 		numberOfConfiguredOutputEvents:          2, // Wasted spark
 		numberOfInjectionsPerEngineCycle:        1  // Ditto
 
-#elif SLATER // http://forum.diyefi.org/viewtopic.php?f=62&t=1336  Citroen with t25 turbo on a flat 4 air cooled engine
+#elif CONFIG == SLATER_ID // http://forum.diyefi.org/viewtopic.php?f=62&t=1336  Citroen with t25 turbo on a flat 4 air cooled engine
 		anglesOfTDC: {ANGLE(0), ANGLE(180),(0), ANGLE(180)}, // 1 and 4, 2 and 3, repeat
 		outputEventPinNumbers:           {0,1,4,5}, // 2 and 3 are unused in this config, fuel are on 4/5 because he plans to use the same hardware on the V8 Supra with wasted spark and thus 2/3 are required for ignition on that
 		schedulingConfigurationBits:     {0,0,1,1}, // 2 ignition 2 injection
@@ -154,7 +150,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:          4, // Wasted spark, semi-sequential
 		numberOfInjectionsPerEngineCycle:        2  // Semi-sequential, crank sync only
 
-#elif PETERJSERIES // Firing order 1-4-2-5-3-6 http://forum.diyefi.org/viewtopic.php?f=62&t=1533
+#elif CONFIG == PETERJSERIES_ID // Firing order 1-4-2-5-3-6 http://forum.diyefi.org/viewtopic.php?f=62&t=1533
 		anglesOfTDC: {ANGLE(0), ANGLE(120), ANGLE(240), ANGLE(360), ANGLE(480), ANGLE(600)},
 		outputEventPinNumbers:       {0,3,1,4,2,5}, // An example of wiring your engine with cylinder one on output one, harder to grok
 		schedulingConfigurationBits: {1,1,1,1,1,1}, // Ones represent scheduling for injection, zeros represent scheduling for ignition
@@ -162,19 +158,37 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:          6, // THESE ARE NOT IGN, THEY ARE FUEL
 		numberOfInjectionsPerEngineCycle:        1  // Sequential, baby, yeah!
 
-// Looking forward to there being links to threads here soon! In no particular order:
-//#elif LEV8N
-//#elif SEANKR1
-//#elif DEUCECOUPE
-//#elif TTV8SUPRA
-//#elif SECRETSQUIRREL // Shhhhhh! :-p
-//#elif HOTCAT
-//#elif MICROTECHSUCKS // Yes, that's you, John "I love MicroTech" Tramp
-//#elif QUAKE86 // Yep, this one too! :-)
-//#elif CRAIGB2200
-//#elif DAILYRAVAGE // No pun intended!
-//#elif QUICKRAVAGE // No pun intended here either!
-// No pressure guys! <cough, cough> :-)
+#elif CONFIG == DEUCECOUPE_ID // DeuceEFI's GM 3100 V6, firing order 1-6-5-4-3-2, wasted spark DIS ignition http://forum.diyefi.org/viewtopic.php?f=3&t=1278
+		anglesOfTDC: {ANGLE(0), ANGLE(120), ANGLE(240), ANGLE(360), ANGLE(480), ANGLE(600), ANGLE(0), ANGLE(120), ANGLE(240), ANGLE(360), ANGLE(480), ANGLE(600)},
+		outputEventPinNumbers:       {0,0,0,0,0,0,2,3,4,2,3,4}, // DIS E-dizzy and semi-sequential, for now.
+		schedulingConfigurationBits: {0,0,0,0,0,0,1,1,1,1,1,1}, // Six E-dizzy style DIS ignition outputs and six injection events, two per cycle, semi sequential
+		decoderEngineOffset:           ANGLE(0.00), // Nothing for now, so as to be able to figure out what is going on.
+		numberOfConfiguredOutputEvents:         12, // See three lines above
+		numberOfInjectionsPerEngineCycle:        2  // Semi-sequential, for now.
+
+#elif CONFIG == DEUCES10_ID // Firing order 1-3-4-2 setup in wiring harness
+		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)},
+		outputEventPinNumbers:       {0,0,0,0,5,4,4,4}, // DIS E-dizzy and Sequential
+		schedulingConfigurationBits: {0,0,0,0,1,1,1,1}, // First 4 ign, Last 4 fuel
+		decoderEngineOffset:           ANGLE(0.00), //
+		numberOfConfiguredOutputEvents:          8, // 4 coils 4 injectors
+		numberOfInjectionsPerEngineCycle:        1  // pin 5 of port-t will be our only fuel reference
+
+#elif CONFIG == PETERTRUCK_ID // Firing order 1-5-3-6-2-4
+		anglesOfTDC: {ANGLE(0), ANGLE(120), ANGLE(240), ANGLE(360), ANGLE(480), ANGLE(600)},
+		outputEventPinNumbers:       {0,4,2,5,1,3}, // An example of wiring your engine with cylinder one on output one, harder to grok
+		schedulingConfigurationBits: {0,0,0,0,0,0}, // Ones represent scheduling for injection, zeros represent scheduling for ignition
+		decoderEngineOffset:           ANGLE(0.00), // Trim fuel injection END point with this value.
+		numberOfConfiguredOutputEvents:          6, // THESE ARE IGN, THEY ARE NOT FUEL
+		numberOfInjectionsPerEngineCycle:        1  // Sequential, baby, yeah!
+
+#elif CONFIG == SEANKR1_ID // Firing order 1-2-3-4
+		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(45), ANGLE(90), ANGLE(145), ANGLE(270), ANGLE(315), ANGLE(450), ANGLE(495), ANGLE(630)},
+		outputEventPinNumbers:       {0,1,2,3,5,4,4,4,4,4,4,4}, // COP/CNP ignition only
+		schedulingConfigurationBits: {0,0,0,0,1,1,1,1,1,1,1,1}, // First 4 ign, 8 fuel
+		decoderEngineOffset:           ANGLE(0.00), //
+		numberOfConfiguredOutputEvents:          12, // 4 coils 8 injectors
+		numberOfInjectionsPerEngineCycle:        1  // pin 5 of port-t will be our only fuel reference
 
 #else // Nothing scheduled by default, no sensible default for all possible vehicle setups.
 		anglesOfTDC:                            {}, // Depends on cylinder count and other variables
@@ -187,16 +201,42 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 	},
 	cutAndLimiterSettings:{
 		InjectionRPM:{
+#if CONFIG == SLATER_ID
+			disableThreshold:  RPM(7000),
+			reenableThreshold: RPM(6900)
+#elif CONFIG == SEANKR1_ID
+			disableThreshold:  RPM(12050),
+			reenableThreshold: RPM(11800)
+#elif CONFIG == DEUCES10_ID
+			disableThreshold:  RPM(5800),
+			reenableThreshold: RPM(5600)
+#else
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4900)  // Come back on before ignition does
+#endif
 		},
 		IgnitionRPM:{
-#ifdef HOTEL
+#if CONFIG == HOTEL_ID
 			disableThreshold:  RPM(5800),
 			reenableThreshold: RPM(5700) // Nice and close to save the exhaust
-#elif SNOTROCKET
+#elif CONFIG == SNOTROCKET_ID
 			disableThreshold:  RPM(6300),
 			reenableThreshold: RPM(6200)
+#elif CONFIG == SLATER_ID
+			disableThreshold:  RPM(7000),
+			reenableThreshold: RPM(6850)
+#elif CONFIG == PETERJSERIES_ID
+			disableThreshold:  RPM(6000),
+			reenableThreshold: RPM(5950)
+#elif CONFIG == PETERTRUCK_ID
+			disableThreshold:  RPM(5000),
+			reenableThreshold: RPM(4950)
+#elif CONFIG == SEANKR1_ID
+			disableThreshold:  RPM(12100),
+			reenableThreshold: RPM(11900)
+#elif CONFIG == DEUCES10_ID
+			disableThreshold:  RPM(5800),
+			reenableThreshold: RPM(5500)
 #else
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4800)  // Come back on after injection does
@@ -225,5 +265,71 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			SpareB: 1
 		}
 	},
-	userTextField:          "Place your personal notes about whatever you like in here! Don't hesitate to tell us a story about something interesting. Do keep in mind though that when you upload your settings file to the forum this message WILL be visible to all and sundry, so don't be putting too many personal details, bank account numbers, passwords, PIN numbers, license plates, national insurance numbers, IRD numbers, social security numbers, phone numbers, email addresses, love stories and other private information in this field. In fact it is probably best if you keep the information stored here purely related to the vehicle that this system is in"
+	simpleGPIOSettings:{
+		outputConfigs:{
+#if CONFIG == DEUCECOUPE_ID
+			[0] = {
+				variable: &CoreVars0.RPM,
+				upperValue: RPM(400),
+				lowerValue: RPM(300),
+				port: (unsigned char*)&PORTT,
+				mask: BIT3,
+				flags: 0
+			},
+#elif CONFIG == DEUCES10_ID
+			[0] = {
+				variable: &CoreVars0.RPM,
+				upperValue: RPM(400),
+				lowerValue: RPM(300),
+				port: (unsigned char*)&PORTT,
+				mask: BIT3,
+				flags: 0
+			},
+#else
+			[0] = {
+				variable: &CoreVars0.RPM,
+				upperValue: RPM(5000),
+				lowerValue: RPM(4000),
+				port: (unsigned char*)&PORTK,
+				mask: BIT3,
+				flags: 0
+			},
+#endif
+			[1] = {
+				variable: &CoreVars0.CHT,
+				upperValue: DEGREES_C(100),
+				lowerValue: DEGREES_C(90),
+				port: (unsigned char*)&PORTK,
+				mask: BIT4,
+				flags: 0
+			}
+		},
+		numberConfigured: 2,
+		spare: 0
+	},
+	userTextField:  "Place your personal notes about whatever you like in here!"
+			" Don't hesitate to tell us a story about something interesting."
+			" Do keep in mind though that when you upload your settings file to "
+			"the forum this message WILL be visible to all and sundry, so don't "
+			"be putting too many personal details, bank account numbers, "
+			"passwords, PIN numbers, license plates, national insurance numbers, "
+			"IRD numbers, social security numbers, phone numbers, email addresses,"
+			" love stories and other private information in this field. In fact it"
+			" is probably best if you kee"
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

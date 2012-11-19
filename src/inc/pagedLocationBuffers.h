@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008, 2009 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -33,13 +33,11 @@
  * The number of these required is fairly significant and thus is best placed
  * in its own header file. Their only function is to prevent warnings from the
  * linker due to accessing paged addresses in linear space.
- *
- * @author Fred Cooke
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_PAGED_LOCATION_BUFFERS_H_SEEN
 #define FILE_PAGED_LOCATION_BUFFERS_H_SEEN
 
@@ -111,8 +109,8 @@ EXTERN void* primingVolumeTableLocation;
 EXTERN void* primingVolumeTable2Location;
 EXTERN void* engineTempEnrichmentTablePercentLocation;
 EXTERN void* engineTempEnrichmentTablePercent2Location;
-EXTERN void* dwellMaxVersusRPMTableLocation;
-EXTERN void* dwellMaxVersusRPMTable2Location;
+EXTERN void* dwellVersusRPMTableLocation;
+EXTERN void* dwellVersusRPMTable2Location;
 
 /* Small chunks of TablesB here */
 EXTERN void* loggingSettingsLocation;

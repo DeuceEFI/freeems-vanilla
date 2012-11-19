@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -53,58 +53,99 @@
 // See fuelAndIgnitionCalcs.c for more info about CLIFLAGS builds!
 /* The main Advance Table */
 const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
+#if CONFIG == DEFAULT_ID
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
+#elif CONFIG == SNOTROCKET_ID
+	RPMLength:  12,
+	LoadLength: 8,
+#elif CONFIG == SEANKR1_ID
+	RPMLength:  25,
+	LoadLength: 16,
+#else
+	RPMLength:  16,
+	LoadLength: 16,
+#endif
 	RPM:{
-#ifdef TRUCK
+#if CONFIG == TRUCK_ID
 #include "../data/tables/axis/FredsTruck-RPM.h"
-#elif HOTEL
+#elif CONFIG == HOTEL_ID
 #include "../data/tables/axis/HotelHyundai-RPM.h"
-#elif PRESTO
+#elif CONFIG == PRESTO_ID
 #include "../data/tables/axis/FredsTruck-RPM.h"
-#elif SEANKLT1
+#elif CONFIG == SEANKLT1_ID
 #include "../data/tables/axis/SeansLT1-RPM.h"
-#elif SEANKR1
-#include "../data/tables/axis/FredsTruck-RPM.h"
-#elif SNOTROCKET
+#elif CONFIG == SEANKR1_ID
+#include "../data/tables/axis/SeansR1-RPM.h"
+#elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-RPM.h"
+#elif CONFIG == SLATER_ID
+#include "../data/tables/axis/Slater-RPM.h"
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/tables/axis/HotelHyundai-RPM.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/HotelHyundai-RPM.h"
+#elif CONFIG == PETERTRUCK_ID
+#include "../data/tables/axis/HotelHyundai-RPM.h"
+#elif CONFIG == DEFAULT_ID
+#include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 #else
 #include "../data/tables/axis/FredsTruck-RPM.h"
 #endif
 	},
 	Load: {
-#ifdef TRUCK
+#if CONFIG == TRUCK_ID
 #include "../data/tables/axis/FredsTruck-Load.h"
-#elif HOTEL
+#elif CONFIG == HOTEL_ID
 #include "../data/tables/axis/HotelHyundai-Load.h"
-#elif PRESTO
+#elif CONFIG == PRESTO_ID
 #include "../data/tables/axis/FredsTruck-Load.h"
-#elif SEANKLT1
+#elif CONFIG == SEANKLT1_ID
 #include "../data/tables/axis/FredsTruck-Load.h"
-#elif SEANKR1
-#include "../data/tables/axis/FredsTruck-Load.h"
-#elif SNOTROCKET
+#elif CONFIG == SEANKR1_ID
+#include "../data/tables/axis/SeansR1-Load.h"
+#elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-Load.h"
+#elif CONFIG == SLATER_ID
+#include "../data/tables/axis/Slater-Load.h"
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/tables/axis/HotelHyundai-Load.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/HotelHyundai-Load.h"
+#elif CONFIG == PETERTRUCK_ID
+#include "../data/tables/axis/HotelHyundai-Load.h"
+#elif CONFIG == DEFAULT_ID
+#include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 #else
 #include "../data/tables/axis/FredsTruck-Load.h"
 #endif
 	},
 	Table: {
 // USE FLAT 0 DEGREE TIMING UNTIL YOU CAN VERIFY YOUR DECODER OFFSET!!
-#ifdef TRUCK
+#if CONFIG == TRUCK_ID
 #include "../data/tables/ign/FredsTruckIgnitionTiming.h"
-#elif HOTEL
+#elif CONFIG == HOTEL_ID
 #include "../data/tables/ign/HotelHyundaiIgnitionTiming.h"
-#elif PRESTO
+#elif CONFIG == PRESTO_ID
 #include "../data/tables/ign/flat15degrees.h"
-#elif SEANKLT1
+#elif CONFIG == SEANKLT1_ID
 #include "../data/tables/ign/SeansLT1IgnitionTiming.h"
-#elif SEANKR1
-#include "../data/tables/ign/flat0degrees.h"
-#elif JOSHBROWN
-#include "../data/tables/ign/HotelHyundaiIgnitionTiming.h"
-#elif SNOTROCKET
+#elif CONFIG == SEANKR1_ID
+#include "../data/tables/ign/SeansR1IgnitionTiming.h"
+#elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/ign/SimsVolvoIgnitionTiming.h"
+#elif CONFIG == SLATER_ID
+#include "../data/tables/ign/SlaterTiming.h"
+#elif CONFIG == DEUCECOUPE_ID
+//#include "../data/tables/ign/TestDIS.h" // Use for verifying your DIS timing
+#include "../data/tables/ign/Deuces3100Timing.h"
+#elif CONFIG == DEUCES10_ID
+//#include "../data/tables/ign/TestDIS.h" // Use for verifying your DIS timing
+#include "../data/tables/ign/Deuces3100Timing.h"
+#elif CONFIG == PETERTRUCK_ID
+#include "../data/tables/ign/HotelHyundaiIgnitionTiming.h"
+#elif CONFIG == DEFAULT_ID
+#include "../data/tables/ign/DefaultTiming24RPMx19Load.h"
 #else
 #include "../data/tables/ign/flat10degrees.h"
 #endif
@@ -117,10 +158,10 @@ const volatile mainTable IgnitionAdvanceTableSecondaryFlashV TIMETABLESD = {
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
 	RPM:{
-		#include "../data/tables/axis/mainTable-RPM.h"
+		#include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 	},
 	Load:{
-		#include "../data/tables/axis/mainTable-Load.h"
+		#include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 	},
 	Table:{
 		#include "../data/tables/ign/flat15degrees.h"
@@ -133,10 +174,10 @@ const volatile mainTable InjectionAdvanceTableMainFlashV TIMETABLESD = {
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
 	RPM:{
-		#include "../data/tables/axis/mainTable-RPM.h"
+		#include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 	},
 	Load:{
-		#include "../data/tables/axis/mainTable-Load.h"
+		#include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 	},
 	Table:{
 		#include "../data/tables/ign/flat15degrees.h"
@@ -149,10 +190,10 @@ const volatile mainTable InjectionAdvanceTableSecondaryFlashV TIMETABLESD = {
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
 	RPM:{
-		#include "../data/tables/axis/mainTable-RPM.h"
+		#include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 	},
 	Load:{
-		#include "../data/tables/axis/mainTable-Load.h"
+		#include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 	},
 	Table:{
 		#include "../data/tables/ign/flat15degrees.h"

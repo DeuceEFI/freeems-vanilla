@@ -43,8 +43,8 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_FIXED_CONFIGS_H_SEEN
 #define FILE_FIXED_CONFIGS_H_SEEN
 
@@ -53,7 +53,22 @@
 typedef struct {
 	unsigned short accelerationInputEventTimeTolerance; ///< This will be replaced: http://issues.freeems.org/view.php?id=118
 	unsigned short decelerationInputEventTimeTolerance; ///< This will be replaced: http://issues.freeems.org/view.php?id=118
+	unsigned short missingToothTolerance; ///< The future of this variable is uncertain!
 } decoderSetting;
+
+
+#define SOURCE_NORMAL 0
+#define SOURCE_PRESET 1
+#define SOURCE_LINEAR 2 ///< Read from the normal ADC pin, but process linearly. For bench use, mainly.
+
+/**
+ * Configuration that controls how the values of variables are determined.
+ */
+typedef struct {
+	unsigned char BRV;
+	unsigned char CHT;
+	unsigned char IAT;
+} sensorSource;
 
 
 /** @brief Preset values for inputs and other variables
@@ -63,25 +78,22 @@ typedef struct {
  * choose to use a fixed reading instead of the real thing.
  */
 typedef struct {
-	unsigned short presetIAT;  ///< Preset variable value to override calculated values.
-	unsigned short presetCHT;  ///< @copydoc presetIAT
-	unsigned short presetTPS;  ///< @copydoc presetIAT
-	unsigned short presetEGO;  ///< @copydoc presetIAT
-	unsigned short presetBRV;  ///< @copydoc presetIAT
-	unsigned short presetMAP;  ///< @copydoc presetIAT
-	unsigned short presetAAP;  ///< @copydoc presetIAT
-	unsigned short presetMAT;  ///< @copydoc presetIAT
-	unsigned short presetEGO2; ///< @copydoc presetIAT
-	unsigned short presetIAP;  ///< @copydoc presetIAT TODO YAGNI
-	unsigned short presetBPW;  ///< @copydoc presetIAT
-	unsigned short presetAF;   ///< @copydoc presetIAT
+	unsigned short presetIAT;   ///< Preset variable value to override calculated values.
+	unsigned short presetCHT;   ///< @copydoc presetIAT
+	unsigned short presetBRV;   ///< @copydoc presetIAT
+
+	unsigned short failsafeIATIgnition;  ///< Value to fall back on if a sensor fault is detected
+	unsigned short failsafeIATInjection; ///< @copydoc failsafeIATIgnition
+	unsigned short failsafeCHT; ///< @copydoc failsafeIATIgnition
+	unsigned short failsafeBRV; ///< @copydoc failsafeIATIgnition
+	unsigned short failsafeMAP; ///< @copydoc failsafeIATIgnition
+	unsigned short failsafeAAP; ///< @copydoc failsafeIATIgnition
+	unsigned short failsafeTPS; ///< @copydoc failsafeIATIgnition
 } sensorPreset;
 
 
 /// Ranges for sensors with linear config
 typedef struct {
-	unsigned short TPSClosedMAP;  ///< Unused at this time.
-	unsigned short TPSOpenMAP;    ///< Unused at this time.
 	signed short   MAPMinimum;    ///< Vacuum required to make the sensor reach 0 Volt output. Theoretical only, most do not rail.
 	unsigned short MAPRange;      ///< Number of kPa between 0 Volts and 5 Volts.
 	unsigned short AAPMinimum;    ///< @copydoc MAPMinimum
@@ -186,13 +198,116 @@ typedef struct { // Comment represents normal and recommended cut type
 } cutAndLimiterSetting;
 
 
+typedef struct {
+	unsigned short* variable;
+	unsigned short upperValue;
+	unsigned short lowerValue;
+	unsigned char* port;
+	unsigned char mask;
+	unsigned char flags; // for go high or low on success.
+} singleSimpleGPOutput;
+
+
+#define NUMBER_OF_OUTPUT_CONFIGS 8
+typedef struct {
+	singleSimpleGPOutput outputConfigs[NUMBER_OF_OUTPUT_CONFIGS];
+	unsigned char numberConfigured;
+	unsigned char spare;
+} simpleGPIOSetting;
+
+
 /// Settings related to sensor reading
 typedef struct {
 	unsigned short readingTimeout; ///< How often an ADC reading MUST occur.
+	unsigned char numberOfADCsToRead;
+	unsigned char spare8bitConfig;
 } sensorSetting;
 
 
-#define userTextFieldArrayLength1 (flashSectorSize - (sizeof(engineSetting) + sizeof(serialSetting) + sizeof(coarseBitBangSetting) + sizeof(schedulingSetting) + sizeof(cutAndLimiterSetting)))
+#define LOAD_MAP 0
+#define LOAD_TPS 1
+#define LOAD_MAF 2
+#define LOAD_AAP 3
+
+#define ALGO_SPEED_DENSITY 0
+#define ALGO_ALPHA_N       1
+#define ALGO_MAF           2
+#define ALGO_SD_AN_BLEND   3 //TODO make this happen !
+
+#define DWELL_BRV   0
+#define DWELL_RPM   1
+#define DWELL_FIXED 2
+
+/// Settings for fueling algorithms
+typedef struct {
+	unsigned char loadType;
+	unsigned char algorithmType;
+	unsigned char dwellType;
+	unsigned char padding;
+	unsigned short dwellFixedPeriod;
+} algorithmSetting;
+
+
+/// Input output pin usage configuration @todo TODO document this better
+typedef struct {
+//	unsigned char PullUpEnable;      ///< Enables per-port weak (~100k) internal pullups. See section 22.3.2.11 on page 834 of MC9S12XDP512RMV2.pdf
+//	unsigned char ReducedDrive;      ///< Do NOT change this! This reduces drive strength and could harm your engine. See section 22.3.2.12 on page 835 of MC9S12XDP512RMV2.pdf
+	unsigned char PWMEnable;         ///< Enables the PWM functionality for each pin. Note for 16 bit you the low order bit enabled. See section 8.3.2.1 on page 368 of MC9S12XDP512RMV2.pdf
+	unsigned char PWMPolarity;       ///< Inverts the duty of the output. 1 means "duty is high portion", 0 means "duty is low portion". See section 8.3.2.2 on page 370 of MC9S12XDP512RMV2.pdf
+	unsigned char PWMClock;          ///< TODO abstract this away
+	unsigned char PWMClockPrescaler; ///< TODO abstract this away
+	unsigned char PWMCenterAlign;    ///< See section 8.3.2.5 on page 372 of MC9S12XDP512RMV2.pdf
+	unsigned char PWMControl;        ///< The high four bits concatenate the 8 bit PWM channels into 4 16 bit channels on a pair by pair basis. 4 joins (0,1), 5 joins (2,3), 6 joins (4,5), 7 joins (6,7).
+	unsigned char PWMScalerA;        ///< TODO abstract this away
+	unsigned char PWMScalerB;        ///< TODO abstract this away
+
+	unsigned char PWMPeriod0; ///< TODO abstract this away
+	unsigned char PWMPeriod1; ///< TODO abstract this away
+	unsigned char PWMPeriod2; ///< TODO abstract this away
+	unsigned char PWMPeriod3; ///< TODO abstract this away
+	unsigned char PWMPeriod4; ///< TODO abstract this away
+	unsigned char PWMPeriod5; ///< TODO abstract this away
+	unsigned char PWMPeriod6; ///< TODO abstract this away
+	unsigned char PWMPeriod7; ///< TODO abstract this away
+
+	unsigned char PWMInitialDuty0; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty1; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty2; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty3; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty4; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty5; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty6; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+	unsigned char PWMInitialDuty7; ///< The duty cycle at power up. Usually unimportant due to being overwritten by the algorithm involved milliseconds later.
+
+	unsigned char PortInitialValueA; ///< The state of the port at power up. @see PortDirectionA
+	unsigned char PortInitialValueB; ///< The state of the port at power up. @see PortDirectionB
+	unsigned char PortInitialValueC; ///< The state of the port at power up. @see PortDirectionC
+	unsigned char PortInitialValueD; ///< The state of the port at power up. @see PortDirectionD
+	unsigned char PortInitialValueE; ///< The state of the port at power up. @see PortDirectionE
+	unsigned char PortInitialValueH; ///< The state of the port at power up. @see PortDirectionH
+	unsigned char PortInitialValueJ; ///< The state of the port at power up. @see PortDirectionJ
+	unsigned char PortInitialValueK; ///< The state of the port at power up. @see PortDirectionK
+	unsigned char PortInitialValueM; ///< The state of the port at power up. @see PortDirectionM
+	unsigned char PortInitialValueP; ///< The state of the port at power up. @see PortDirectionP
+	unsigned char PortInitialValueS; ///< The state of the port at power up. @see PortDirectionS
+	unsigned char PortInitialValueT; ///< The state of the port at power up. @see PortDirectionT Currently this setting is ignored. TODO Make it take effect on unused port T pins.
+
+	unsigned char PortDirectionA; ///< @see PortDirectionB Pin 6 is the Firmware Load switch input AND the Check Engine Light output. Pin 7 is the standard fuel pump relay drive pin. These bits are therefore overridden and have no effect.
+	unsigned char PortDirectionB; ///< Whether pins act as inputs or outputs, 1 means output, 0 means input. 0 is the default for most pins. Note, peripheral modules which use these pins override this control.
+	unsigned char PortDirectionC; ///< @see PortDirectionB
+	unsigned char PortDirectionD; ///< @see PortDirectionB
+	unsigned char PortDirectionE; ///< @see PortDirectionB This port is associated with various control bits. Extreme care should be taken when using them, regardless of what for. Pins 0 and 1 are always inputs regardless of this setting.
+	unsigned char PortDirectionH; ///< @see PortDirectionB This port is associated with the SPI1 (0-3), SPI2 (4-7), SCI4 (4,5), and SCI5 (6,7) modules.
+	unsigned char PortDirectionJ; ///< @see PortDirectionB This port is associated with the SCI2 (0,1), I2C0 (6,7), I2C1 (4,5), and CAN4 (6,7) modules.
+	unsigned char PortDirectionK; ///< @see PortDirectionB
+	unsigned char PortDirectionM; ///< @see PortDirectionB This port is associated with the CAN0 (0,1), CAN1 (2,3), CAN2 (4,5), CAN3 (6,7), and SCI3 (6,7) modules.
+	unsigned char PortDirectionP; ///< @see PortDirectionB This port is associated with the PWM (0-7) module.
+	unsigned char PortDirectionS; ///< @see PortDirectionB This port is associated with the SCI0 (0,1), SCI1 (2,3), and SPI0 (4-7) modules. Primary communication is over SCI0, therefore the control bits for those pins are overridden to ensure correct operation, and have no effect.
+	unsigned char PortDirectionT; ///< @see PortDirectionB This port is associated with the ECT (0-7) module. Currently this setting is ignored. TODO Make it take effect on unused port T pins.
+} inputOutputSetting;
+
+
+#define userTextFieldArrayLength1 (flashSectorSize - (sizeof(engineSetting) + sizeof(serialSetting) + sizeof(coarseBitBangSetting) + sizeof(schedulingSetting) + sizeof(cutAndLimiterSetting) + sizeof(simpleGPIOSetting)))
 /**
  * One of two structs of fixed configuration data such as physical parameters etc.
  *
@@ -207,16 +322,20 @@ typedef struct {
 	coarseBitBangSetting coarseBitBangSettings; ///< @see coarseBitBangSetting
 	schedulingSetting schedulingSettings;       ///< @see schedulingSetting
 	cutAndLimiterSetting cutAndLimiterSettings; ///< @see cutAndLimiterSetting
+	simpleGPIOSetting simpleGPIOSettings;       ///< @see simpleGPIOSetting
 	unsigned char userTextField[userTextFieldArrayLength1]; ///< For on-board meta-data such as which vehicle the unit is from, put your personal tuning notes here!
 } fixedConfig1;
 
 
-#define userTextFieldArrayLength2 (flashSectorSize - (sizeof(sensorPreset) + sizeof(sensorRange) + sizeof(sensorSetting) + sizeof(decoderSetting)))
+#define userTextFieldArrayLength2 (flashSectorSize - (sizeof(sensorSource) + sizeof(sensorPreset) + sizeof(sensorRange) + sizeof(sensorSetting) + sizeof(algorithmSetting) + sizeof(inputOutputSetting) + sizeof(decoderSetting)))
 /** @copydoc fixedConfig1 */
 typedef struct {
+	sensorSource sensorSources;                              ///< @see sensorSource
 	sensorPreset sensorPresets;                              ///< @see sensorPreset
 	sensorRange sensorRanges;                                ///< @see sensorRange
 	sensorSetting sensorSettings;                            ///< @see sensorSetting
+	algorithmSetting algorithmSettings;                      ///< @see algorithmSetting
+	inputOutputSetting inputOutputSettings;                  ///< @see inputOutputSetting
 	decoderSetting decoderSettings;                          ///< @see decoderSetting
 	unsigned char userTextField2[userTextFieldArrayLength2]; ///< For on-board meta-data such as which vehicle the unit is from, put your personal tuning notes here!
 } fixedConfig2;

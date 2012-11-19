@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -30,8 +30,8 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_LOCATION_IDS_H_SEEN
 #define FILE_LOCATION_IDS_H_SEEN
 
@@ -73,8 +73,8 @@
 #define primingVolumeTable2LocationID                  0x0109
 #define engineTempEnrichmentTablePercentLocationID     0x010A
 #define engineTempEnrichmentTablePercent2LocationID    0x010B
-#define dwellMaxVersusRPMTableLocationID               0x010C
-#define dwellMaxVersusRPMTable2LocationID              0x010D
+#define dwellVersusRPMTableLocationID                  0x010C
+#define dwellVersusRPMTable2LocationID                 0x010D
 
 #ifdef BLOCK_DETAILS_LOOKUP_C // only for here, external stuff should use the flags field for determining what to do/not do.
 #define TwoDTableUS_SmallTableFullBlocks_Border        0x3000
@@ -142,13 +142,20 @@
 #define engineSettingsLocationID                       0xC000
 #define serialSettingsLocationID                       0xC001
 #define coarseBBSettingsLocationID                     0xC002
-#define userTextFieldLocationID                        0xC004
+#define schedulingSettingsLocationID                   0xC003
+#define cutAndLimiterSettingsLocationID                0xC004
+#define simpleGPIOSettingsLocationID                   0xC005
+#define userTextFieldLocationID                        0xC100
 
 /* Fixed config 2 sub sections */
-#define sensorRangesLocationID                         0xC005
-#define sensorPresetsLocationID                        0xC006
-#define sensorSettingsLocationID                       0xC007
-#define userTextField2LocationID                       0xC008
+#define sensorSourcesLocationID                        0xC020
+#define sensorPresetsLocationID                        0xC021
+#define sensorRangesLocationID                         0xC022
+#define sensorSettingsLocationID                       0xC023
+#define algorithmSettingsLocationID                    0xC024
+#define inputOutputSettingsLocationID                  0xC025
+#define decoderSettingsLocationID                      0xC026
+#define userTextField2LocationID                       0xC101
 
 #ifdef BLOCK_DETAILS_LOOKUP_C // only for here, external stuff should use the flags field for determining what to do/not do.
 #define FixedConfigSubBlocks_Border_ReadOnlyVarBlocks  0xF000
@@ -158,9 +165,10 @@
 #define ADCRegistersLocationID                         0xF000
 #define coreVarsLocationID                             0xF001
 #define DerivedVarsLocationID                          0xF002
-#define CountersLocationID                             0xF003
-#define ClocksLocationID                               0xF004
-#define FlaggablesLocationID                           0xF005
+#define KeyUserDebugLocationID                         0xF003
+#define CountersLocationID                             0xF004
+#define ClocksLocationID                               0xF005
+#define FlaggablesLocationID                           0xF006
 
 
 #else

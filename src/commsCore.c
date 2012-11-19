@@ -37,8 +37,6 @@
  *
  * @todo TODO function to setup a packet and send it fn(populateBodyFunctionPointer(), header, other, fields, here, and, use, or, not, within){}
  * @todo TODO factor many things into functions and move the receive delegator to its own file
- *
- * @author Fred Cooke
  */
 
 
@@ -62,37 +60,33 @@
  *
  * Copies various chunks of data to the transmission buffer and truncates to
  * the configured length. If changing this, update the maxBasicDatalogLength.
- *
- * @author Fred Cooke
- *
- * @warning This function is only a skeleton at this time.
  */
-void populateBasicDatalog(){
-	/* Save the current position */
-	unsigned char* position = TXBufferCurrentPositionHandler;
-
+unsigned short populateBasicDatalog(){
 	/// @todo TODO setup proper sequence and clock with some sort of differential measurement log to log. insert in front of actual data because these are part of the log itself.
 
 	// By default, default values are populated, but if you drop code into the custom directory, that replaces the defaults.
 	populateCustomDatalog();
+
 	// Done here to overwrite cheeky custom users data:
 	KeyUserDebugs.coreStatusA = coreStatusA;
 	KeyUserDebugs.tempClock++;
 	KeyUserDebugs.clockIn8thsOfAMilli = Clocks.realTimeClockMain;
 	KeyUserDebugs.clockInMilliSeconds = Clocks.realTimeClockMillis;
 
-	/* Get core vars */
-	memcpy(TXBufferCurrentPositionHandler, CoreVars, sizeof(CoreVar));
-	TXBufferCurrentPositionHandler += sizeof(CoreVar);
-	/* Get derived vars */
-	memcpy(TXBufferCurrentPositionHandler, DerivedVars, sizeof(DerivedVar));
-	TXBufferCurrentPositionHandler += sizeof(DerivedVar);
-	/* Get raw adc counts */
-	memcpy(TXBufferCurrentPositionHandler, &KeyUserDebugs, sizeof(KeyUserDebug));
-	TXBufferCurrentPositionHandler += sizeof(KeyUserDebug);
-
-	/* Set/Truncate the log to the specified length */
-	TXBufferCurrentPositionHandler = position + TablesB.SmallTablesB.loggingSettings.basicDatalogLength;
+	unsigned short confSize = 0;
+	unsigned char chunkLimit = TablesB.SmallTablesB.loggingSettings.firstChunk + TablesB.SmallTablesB.loggingSettings.numberOfChunks;
+	unsigned char chunks;
+	for(chunks=TablesB.SmallTablesB.loggingSettings.firstChunk;chunks<chunkLimit;chunks++){
+		unsigned short localSize = TablesB.SmallTablesB.loggingSettings.logChunks[chunks].size;
+		confSize += localSize;
+		if(confSize > 2048){
+			confSize -= localSize;
+			break;
+		}
+		memcpy(TXBufferCurrentPositionHandler, TablesB.SmallTablesB.loggingSettings.logChunks[chunks].address, localSize);
+		TXBufferCurrentPositionHandler += localSize;
+	}
+	return confSize;
 }
 
 
@@ -147,8 +141,6 @@ void populateBasicDatalog(){
  * process. It configures the pos/neg ack header bit, adds the code if neg,
  * runs a checksum over the packet data and tags it to the end before
  * configuring the various ISRs that need to send the data out.
- *
- * @author Fred Cooke
  *
  * @bug http://issues.freeems.org/view.php?id=81
  * @todo TODO fix the double/none start byte bug and remove the hack!
@@ -218,8 +210,6 @@ void finaliseAndSend(unsigned short errorID){
  * This is the core function that controls which functionality is run when a
  * packet is received in full by the ISR code and control is passed back to the
  * main loop code. The vast majority of communications action happens here.
- *
- * @author Fred Cooke
  */
 void decodePacketAndRespond(){
 	/* Extract and build up the header fields */
@@ -318,7 +308,7 @@ void decodePacketAndRespond(){
 	/* This is where all the communication logic resides.
 	 *
 	 * Please Note: Length and it's flag should be set by each return packet
-	 * type handler if required or desired.	If an ack has been requested,
+	 * type handler if required or desired. If an ack has been requested,
 	 * ensure the negative ack flag is set if the operation failed.
 	 */
 	switch (RXHeaderPayloadID){
@@ -846,6 +836,11 @@ void decodePacketAndRespond(){
 				break;
 			}
 
+			// Special behaviour for size of zero which burns the whole block
+			if((size == 0) && (offset == 0)){
+				size = details.size;
+			}
+
 			// Check that size and offset describe a region that is not out of bounds
 			if((size == 0) || (offset > (details.size - 1)) || (size > (details.size - offset))){
 				errorID = invalidSizeOffsetCombination;
@@ -870,26 +865,18 @@ void decodePacketAndRespond(){
 		}
 		case requestDatalogPacket: // Set type through standard configuration methods
 		{
-			if((RXCalculatedPayloadLength > 2) || (RXCalculatedPayloadLength == 1)){
+			if(RXCalculatedPayloadLength != 0){
 				errorID = payloadLengthTypeMismatch;
 				break;
-			}else if(RXCalculatedPayloadLength == 2){
-				unsigned short newConfiguredLength = *((unsigned short*)RXBufferCurrentPosition);
-				if(newConfiguredLength > maxBasicDatalogLength){
-					errorID = datalogLengthExceedsMax;
-					break;
-				}else{
-					TablesB.SmallTablesB.loggingSettings.basicDatalogLength = newConfiguredLength;
-				}
-			}// fall through to use existing configured length
+			}
 
 			/* Set the length field up */
 			*TXHeaderFlags |= HEADER_HAS_LENGTH;
-			*(unsigned short*)TXBufferCurrentPositionHandler = TablesB.SmallTablesB.loggingSettings.basicDatalogLength;
+			unsigned short* localLength = (unsigned short*)TXBufferCurrentPositionHandler;
 			TXBufferCurrentPositionHandler += 2;
 
 			/* Fill out the log and send */
-			populateBasicDatalog(); // TODO change this to pull type from settings and call generic populator which populates with passed in type
+			*localLength = populateBasicDatalog();
 			break;
 		}
 		case setAsyncDatalogType:
@@ -1390,8 +1377,6 @@ void decodePacketAndRespond(){
  *
  * This is a wrapper for use outside the communication handler function. The error will only be sent if the buffer is empty and available, if not, it will be discarded.
  *
- * @author Fred Cooke
- *
  * @warning Use of this function signifies that the error you are trying to propagate is not urgent and can be forgotten.
  *
  * @note Consider not throwing an error if it seems appropriate to use this.
@@ -1417,8 +1402,6 @@ void sendErrorIfClear(unsigned short errorID){
  * function will block until the error is able to be sent. This behaviour is
  * not recommended as it will interfere with engine operation somewhat.
  *
- * @author Fred Cooke
- *
  * @warning Use of this function signifies that the error you are trying to propagate is extremely urgent and can not be forgotten.
  *
  * @note Using this function blocks other main loop code from execution. Consider handling the error in another way if it seems appropriate to use this.
@@ -1437,8 +1420,6 @@ void sendErrorIfClear(unsigned short errorID){
  * This function is only for use inside the communication handling function.
  * Use of it outside this environment is not supported and behaviour when used
  * as such is undefined.
- *
- * @author Fred Cooke
  *
  * @warning ONLY use this function from within the communication handler.
  *
@@ -1490,8 +1471,6 @@ void sendErrorInternal(unsigned short errorID){
  *
  * This is a wrapper for use outside the communication handler function. The debug message will only be sent if the buffer is empty and available, if not, it will be discarded.
  *
- * @author Fred Cooke
- *
  * @note This function exists as a convenience to developers, do not publish code that calls this function.
  *
  * @param message is a pointer to the null terminated debug message string.
@@ -1511,8 +1490,6 @@ void sendDebugIfClear(unsigned char* message){
  * This is a wrapper for use outside the communication handler function. This
  * function will block until the debug message is able to be sent.
  *
- * @author Fred Cooke
- *
  * @note This function exists as a convenience to developers, do not publish code that calls this function.
  *
  * @param message is a pointer to the null terminated debug message string.
@@ -1527,8 +1504,6 @@ void sendDebugIfClear(unsigned char* message){
 /** @brief Send a debug message
  *
  * Sends a null terminated debug message out on the broadcast address of all available interfaces.
- *
- * @author Fred Cooke
  *
  * @warning ONLY use this function from within the communication handler.
  *

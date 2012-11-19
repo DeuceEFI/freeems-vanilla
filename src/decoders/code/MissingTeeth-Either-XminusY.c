@@ -1,26 +1,27 @@
-/*	FreeEMS - the open source engine management system
-
-	Copyright 2011 Fred Cooke
-
-	This file is part of the FreeEMS project.
-
-	FreeEMS software is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	FreeEMS software is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with any FreeEMS software.  If not, see http://www.gnu.org/licenses/
-
-	We ask that if you make any changes to this file you email them upstream to
-	us at admin(at)diyefi(dot)org or, even better, fork the code on github.com!
-
-	Thank you for choosing FreeEMS to run your engine! */
+/* FreeEMS - the open source engine management system
+ *
+ * Copyright 2011 Fred Cooke
+ *
+ * This file is part of the FreeEMS project.
+ *
+ * FreeEMS software is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FreeEMS software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with any FreeEMS software.  If not, see http://www.gnu.org/licenses/
+ *
+ * We ask that if you make any changes to this file you email them upstream to
+ * us at admin(at)diyefi(dot)org or, even better, fork the code on github.com!
+ *
+ * Thank you for choosing FreeEMS to run your engine!
+ */
 
 
 /** @file
@@ -57,7 +58,7 @@ match matches;
 
 
 void decoderInitPreliminary(){
-	TCTL4 = 0x02; /* Capture on falling edge of T0 only, capture off for 1,2,3 */
+	TCTL4 = 0x01; /* Capture on rising edge of T0 only, capture off for 1,2,3 */
 }
 
 
@@ -89,7 +90,7 @@ void PrimaryRPMISR(void) {
 	}
 	unsigned long thisEventTimeStamp = timeStamp.timeLong;
 
-	if(!(PTITCurrentState & 0x01)){
+	if(PTITCurrentState & 0x01){
 		// Calc this period
 		unsigned char lastEvent = 0;
 		unsigned long thisInterEventPeriod = 0;
@@ -111,7 +112,7 @@ void PrimaryRPMISR(void) {
 				}
 
 				// Calculate tolerance, then add and subtract it from whatever required
-				unsigned long tolerance = (smaller * TOLERANCE_LEVEL) / 4096; // TODO un hard code this. currently 25% tolerance
+				unsigned long tolerance = (smaller * MISSING_TEETH * fixedConfigs2.decoderSettings.missingToothTolerance) / 4096;
 				// div by 4k = fairly high minimum RPM for low teeth wheels
 				// perhaps provide some options for different tolerance on different types of expected widths
 				// the wide one on larger missing counts has more time to get to a higher RPM and needs a wider tolerance

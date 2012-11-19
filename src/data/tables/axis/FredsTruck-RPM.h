@@ -28,13 +28,11 @@
  *
  * @ingroup dataInitialisers
  *
- * @brief A default set of RPMs for a typical jap engine.
- *
- * This file only contains the data to be hash included into all mainTable RPM sections
+ * @brief The RPM axis values for my truck's very rough tune.
  */
 
 
-// 27 RPM values of which only 16 are used due to current tuning software limitations
+// 16 RPM values due to limitation in previous tuner
  RPM(250),
  RPM(700),
 RPM(1000),
@@ -50,17 +48,4 @@ RPM(6400),
 RPM(7000),
 RPM(7600),
 RPM(8200),
-RPM(8800),
-
-// spare:
-RPM(9000),
-RPM(9001),
-RPM(9002),
-RPM(9003),
-RPM(9004),
-RPM(9005),
-RPM(9006),
-RPM(9007),
-RPM(9008),
-RPM(9009),
-RPM(9010)
+RPM(8800)

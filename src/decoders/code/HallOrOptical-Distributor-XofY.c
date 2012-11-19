@@ -41,8 +41,6 @@
  *
  * To effectively reverse the polarity, just subtract your angle from 180 and
  * it will then be correct, assuming that either angle is correct.
- *
- * @author Fred Cooke
  */
 
 
@@ -79,8 +77,8 @@ void PrimaryRPMISR(){
 	DEBUG_TURN_PIN_ON(DECODER_BENCHMARKS, BIT0, PORTB);
 
 	/* Save all relevant available data here */
-	unsigned short edgeTimeStamp = TC0;				/* Save the edge time stamp */
-	unsigned char PTITCurrentState = PTIT;			/* Save the values on port T regardless of the state of DDRT */
+	unsigned short edgeTimeStamp = TC0;    /* Save the edge time stamp */
+	unsigned char PTITCurrentState = PTIT; /* Save the values on port T regardless of the state of DDRT */
 
 	KeyUserDebugs.primaryTeethSeen++;
 

@@ -34,8 +34,6 @@
  * from which low priority non-realtime code runs. The most important units of
  * code that runs under the main loop umbrella are the injection, ignition and
  * scheduling calculations.
- *
- * @author Fred Cooke
  */
 
 
@@ -55,8 +53,6 @@
  * closely reflects the attached engines rapidly changing requirements. When
  * accessory code is added a new scheduling algorithm will be required to keep
  * the latency low without starving any particular blocks of CPU time.
- *
- * @author Fred Cooke
  */
 int  main(){ /// @todo TODO maybe move this to paged flash ?
 	// Set everything up.
@@ -97,16 +93,26 @@ int  main(){ /// @todo TODO maybe move this to paged flash ?
 			schedulePortTPin(activeFuelChannels[outputPin], timeStamp);
 		}
 	}
-
+#ifdef XGATE
+//TODO add priming code to xgate outputs
+//	unsigned char ouputChannel;
+//	for(ouputChannel = 0; ouputChannel< NUMBER_OF_OUTPUT_CHANNELS; ouputChannel++){
+//		if(activeFuelChannels[ouputChannel] < MAX_NUMBER_OF_OUTPUT_EVENTS){
+//			outputEventPulseWidthsMath[activeFuelChannels[ouputChannel]] = primingPulseWidth;
+//			outputEventDelayFinalPeriod[activeFuelChannels[ouputChannel]] = SHORTHALF;
+//			schedulePortTPin(activeFuelChannels[ouputChannel], timeStamp);
+//		}
+//	}
+#endif
 	// Run forever repeating.
 	while(TRUE){
-	//	unsigned short start = realTimeClockMillis;
+		//unsigned short start = realTimeClockMillis;
 		/* If ADCs require forced sampling, sample now */
 		if(coreStatusA & FORCE_READING){
 			ATOMIC_START(); /*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/
 			/* Atomic block to ensure a full set of readings are taken together */
 
-			/* Check to ensure that a reading wasn't take before we entered a non interruptable state */
+			/* Check to ensure that a reading wasn't take before we entered a non interruptible state */
 			if(coreStatusA & FORCE_READING){ // do we still need to do this TODO ?
 
 				sampleEachADC(ADCBuffersRecord); // TODO still need to do a pair of loops and clock these two functions for performance.
@@ -195,7 +201,7 @@ int  main(){ /// @todo TODO maybe move this to paged flash ?
 						TXBufferInUseFlags |= COM_SET_SCI0_INTERFACE_ID;
 						// SCI0 only for now...
 
-						// headers including length...						*length = configuredBasicDatalogLength;
+						// headers including length...                 *length = configuredBasicDatalogLength;
 						TXBufferCurrentPositionHandler = (unsigned char*)&TXBuffer;
 
 						/* Initialised here such that override is possible */
@@ -211,11 +217,11 @@ int  main(){ /// @todo TODO maybe move this to paged flash ?
 						TXBufferCurrentPositionHandler += 2;
 
 						/* Set the length */
-						*((unsigned short*)TXBufferCurrentPositionHandler) = TablesB.SmallTablesB.loggingSettings.basicDatalogLength;
+						unsigned short* localLength = (unsigned short*)TXBufferCurrentPositionHandler;
 						TXBufferCurrentPositionHandler += 2;
 
 						/* populate data log */
-						populateBasicDatalog();
+						*localLength = populateBasicDatalog();
 						finaliseAndSend(0);
 						break;
 					}
@@ -249,7 +255,7 @@ int  main(){ /// @todo TODO maybe move this to paged flash ?
 						TXBufferInUseFlags |= COM_SET_SCI0_INTERFACE_ID;
 						// SCI0 only for now...
 
-						// headers including length...						*length = configuredBasicDatalogLength;
+						// headers including length...                 *length = configuredBasicDatalogLength;
 						TXBufferCurrentPositionHandler = (unsigned char*)&TXBuffer;
 
 						/* Initialised here such that override is possible */
@@ -284,6 +290,8 @@ int  main(){ /// @todo TODO maybe move this to paged flash ?
 				lastCalcCount = Counters.calculationsPerformed;
 			}
 		}
+
+		performSimpleGPIO();
 
 		// PWM experimentation
 		adjustPWM();

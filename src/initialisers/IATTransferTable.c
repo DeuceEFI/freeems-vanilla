@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008, 2009 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -32,8 +32,6 @@
  *
  * This file exists solely to contain the Inlet Air Temperature thermistor
  * transfer function lookup table.
- *
- * @author Fred Cooke
  */
 
 
@@ -48,20 +46,26 @@
  * @author FreeTherm
  */
 const volatile unsigned short IATTransferTable[1024] LOOKUPD = {
-#ifdef TRUCK
+#if CONFIG == TRUCK_ID
 #include "../data/thermistors/Bosch.h"
-#elif PRESTO
+#elif CONFIG == PRESTO_ID
 #include "../data/thermistors/Bosch.h"
-#elif SEANKLT1
+#elif CONFIG == SEANKLT1_ID
 #include "../data/thermistors/Bosch.h"
-#elif SEANKR1
-#include "../data/thermistors/Bosch.h"
-#elif JOSHBROWN
-#include "../data/thermistors/Bosch.h"
-#elif SNOTROCKET
+#elif CONFIG == SEANKR1_ID
+#include "../data/thermistors/Denso-2k7Bias.h"
+#elif CONFIG == SNOTROCKET_ID
 #include "../data/thermistors/GM-2k4Bias.h"
-#elif SLATER
+#elif CONFIG == SLATER_ID
 #include "../data/thermistors/GM-2k6Bias.h"
+#elif CONFIG == PETERJSERIES_ID
+#include "../data/thermistors/HondaJSeries-2k4Bias.h"
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/thermistors/GM-2k49Bias.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/thermistors/GM-2k49Bias.h"
+#elif CONFIG == PETERTRUCK_ID
+#include "../data/thermistors/GM-2k4Bias.h"
 #else // Default to correctly biased Jap sensor.
 #include "../data/thermistors/Denso-2k7Bias.h"
 #endif

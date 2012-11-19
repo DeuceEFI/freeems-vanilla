@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2008-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -32,13 +32,11 @@
  * @brief Global constant declarations
  *
  * All global constants are declared in this file for use throughout the program.
- *
- * @author Fred Cooke
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_GLOBAL_CONSTANTS_H_SEEN
 #define FILE_GLOBAL_CONSTANTS_H_SEEN
 
@@ -60,7 +58,7 @@
 
 // Sizes for array must be outside ifndef block
 #define INTERFACE_VERSION_LENGTH   sizeof(INTERFACE_VERSION)
-#define FIRMWARE_VERSION_LENGTH    sizeof(FIRMWARE_VERSION)
+#define FIRMWARE_VERSION_LENGTH    sizeof(FIRMWARE_VERSION) + sizeof(BUILD_CONFIG) + 1
 #define FIRMWARE_BUILD_DATE_LENGTH sizeof(FIRMWARE_BUILD_DATE)
 #define COMPILER_VERSION_LENGTH    sizeof(__VERSION__)
 #define OPERATING_SYSTEM_LENGTH    sizeof(OPERATING_SYSTEM)
@@ -131,20 +129,6 @@ EXTERN const volatile SmallTables4 SmallTablesDFlash2;
 
 EXTERN const volatile fixedConfig1 fixedConfigs1;
 EXTERN const volatile fixedConfig2 fixedConfigs2;
-
-//EXTERN const twoDTableUS ; // ?
-
-/* Fuel correction tables */
-EXTERN const volatile twoDTableUS primingVolumeTableFlash; // perhaps micro litres (cubic milli meters) would be good, 5 - 100 seem to be the norm 327.68 = 65535/200
-EXTERN const volatile twoDTableUS injectorDeadTimeTableFlash; // display as ms, units in native 0.8us ticks
-EXTERN const volatile twoDTableUS postStartEnrichmentTableFlash; // ?
-EXTERN const volatile twoDTableUS engineTempEnrichmentTableFixedFlash; // ?
-EXTERN const volatile twoDTableUS engineTempEnrichmentTablePercentFlash; // ?
-
-
-/* Ignition correction tables */
-EXTERN const volatile twoDTableUS dwellDesiredVersusVoltageTableFlash; // desired dwell vs voltage
-EXTERN const volatile twoDTableUS dwellMaxVersusRPMTableFlash; // maximum dwell vs rpm
 
 
 /* Fueling constants */

@@ -33,13 +33,11 @@
  *
  * This file contains the declarations of objects used as a common interface
  * between all of the different wheel decoders and the main loop scheduler.
- *
- * @author Fred Cooke
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_DECODER_INTERFACE_H_SEEN
 #define FILE_DECODER_INTERFACE_H_SEEN
 

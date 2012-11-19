@@ -85,6 +85,10 @@ else
 MD5SUM = md5sum
 endif
 
+ifdef CLIFLAGS
+CLIBUILD = -D CLIFLAGS=1
+endif
+
 # Directories here
 DISTRIBUTIONDIR = ../tmp/$(LABEL)
 FIRMWAREDISTRIBUTIONDIR = $(DISTRIBUTIONDIR)/$(LABEL)-firmware
@@ -109,7 +113,8 @@ TAGNAME = $(OUTDIR)/gitTagName.txt
 
 # Program prefixes, for the main cpu and for the xgate coprocessor
 PREFIX = m68hc11-
-XGPREFIX = mc9xgate-
+#XGPREFIX = mc9xgate-
+XGPREFIX = xgate-
 
 # All of the tools
 CP = cp
@@ -159,7 +164,7 @@ DATARAW = $(FIXEDCLASSES) $(LOOKUPCLASSES1) $(LOOKUPCLASSES2) $(FUELCLASSES) $(T
 DATA = $(patsubst %.c,$(DATADIR)/%.c,$(DATARAW))
 
 # Source code files
-UTILCLASSES = tableLookup.c init.c utils.c globalConstants.c StaticBenchTest.c
+UTILCLASSES = tableLookup.c init.c utils.c globalConstants.c StaticBenchTest.c simpleGPIO.c
 MATHCLASSES = coreVarsGenerator.c derivedVarsGenerator.c fuelAndIgnitionCalcs.c outputScheduler.c decoderInterface.c
 COMCLASSES = flashWrite.c commsCore.c blockDetailsLookup.c
 ISRCLASSES = interrupts.c injectionISRs.c commsISRs.c realtimeISRs.c miscISRs.c xgateVectors.c
@@ -173,12 +178,12 @@ CLASSES = $(SOURCE) $(DATA)
 # Special decoders are not for use running an engine
 RPMSPECIAL = Listener.c BenchTest.c
 # TODO: Automate file naming for the following 4 lines
-RPMEVENTEETH = EvenTeeth-Both-12and1.c EvenTeeth-Both-8and1.c
-RPMMISSINGTEETH = MissingTeeth-TestFile.c MissingTeeth-Cam-24minus1.c MissingTeeth-Crank-8minus1.c MissingTeeth-Crank-12minus1.c MissingTeeth-Crank-36minus1.c MissingTeeth-Crank-60minus2.c MissingTeeth-Cam-6minus2.c MissingTeeth-Crank-30minus2.c
+RPMEVENTEETH = EvenTeeth-Cam-24and1.c EvenTeeth-Cam-16and1.c EvenTeeth-Cam-6and1.c EvenTeeth-Cam-4and1.c EvenTeeth-Distributor-4of6and1.c
+RPMMISSINGTEETH = MissingTeeth-TestFile.c MissingTeeth-Cam-24minus1.c MissingTeeth-Crank-8minus1.c MissingTeeth-Crank-12minus1.c MissingTeeth-Crank-36minus1.c MissingTeeth-Crank-60minus2.c MissingTeeth-Cam-6minus2.c MissingTeeth-Crank-30minus2.c MissingTeeth-Cam-12minus1.c
 RPMHALLOROPTICAL = HallOrOptical-Distributor-4of64.c HallOrOptical-Distributor-4of69.c
 RPMVRDISTRIBUTOR = 
 # Specific purpose per engine stuff here
-RPMSPECIFICENGINE1 = MitsiAndMazda-CAS-4and1.c GM-LT1-CAS-360and8.c
+RPMSPECIFICENGINE1 = MitsiAndMazda-CAS-4and1.c GM-LT1-CAS-360and8.c JSeries-12CrankWith6-2Cam.c
 # Insert your file above and get coding!
 RPMCLASSESRAW = $(RPMSPECIAL) $(RPMEVENTEETH) $(RPMMISSINGTEETH) $(RPMHALLOROPTICAL) $(RPMVRDISTRIBUTOR) $(RPMSPECIFICENGINE1)
 RPMCLASSES = $(patsubst %.c,$(DECDIR)/%.c,$(RPMCLASSESRAW))
@@ -257,7 +262,7 @@ GCDDUMMY = $(patsubst $(S19DIR)/%,$(OUTDIR)/%.txt.dummy,$(GCDS19S))
 # include debug info, optimise , 16 bit ints, hcs12 platform
 GCCOPTS1 = -Wall -Werror -Winline -O -m68hcs12 -mshort -ffunction-sections -idirafter custom -idirafter default
 GCCOPTS2 = -fomit-frame-pointer -msoft-reg-count=8 -mauto-incdec -fsigned-char
-GCCOPTS = $(GCCOPTS1) $(GCCOPTS2) $(CLIFLAGS) -D FIRMWARE_VERSION=\"$(FIRMWARE_VERSION)\" -D FIRMWARE_BUILD_DATE=\"$(BUILD_DATE)\" -D OPERATING_SYSTEM=\"$(OS)\"
+GCCOPTS = $(GCCOPTS1) $(GCCOPTS2) $(CLIBUILD) $(CLIFLAGS) -D FIRMWARE_VERSION=\"$(FIRMWARE_VERSION)\" -D FIRMWARE_BUILD_DATE=\"$(BUILD_DATE)\" -D OPERATING_SYSTEM=\"$(OS)\"
 # -ffunction-sections option splits out the functions such that the garbage collection can get
 # them on a per section basis. I'm not sure, but this could be harmful to paged code so may
 # have to review this at a later date perhaps splitting paged functions from nonpaged ones.
@@ -477,11 +482,11 @@ help:
 	@echo $(Q)#                                                                              #$(Q)
 	@echo $(Q)#   Common goals:                                                              #$(Q)
 	@echo $(Q)#                                                                              #$(Q)
-	@echo $(Q)#   You most likely just want to run "make s19" or "make clean", do that!      #$(Q)
+	@echo $(Q)#   You most likely just want to run \"make s19\" or \"make clean\", do that!      #$(Q)
 	@echo $(Q)#                                                                              #$(Q)
 	@echo $(Q)#   To build with a specific compiled in configuration do this instead:        #$(Q)
 	@echo $(Q)#                                                                              #$(Q)
-	@echo $(Q)#   CLIFLAGS="-D YOURBUILDNAME=1" make clean s19                               #$(Q)
+	@echo $(Q)#   CLIFLAGS=\"-D YOURBUILDNAME=1\" make clean s19                               #$(Q)
 	@echo $(Q)#                                                                              #$(Q)
 	@echo $(Q)################################################################################$(Q)
 
@@ -517,6 +522,9 @@ relpack1: md5sums  sha1sums  s19zips
 relpack2: zipdocs zipmain zipsrc
 
 
+# Force dates and versions to be up to date
+$(PPCDIR)/globalConstants.pp.c: .FORCE
+.FORCE:
 
 
 ################################################################################
@@ -714,10 +722,10 @@ dependencies: dependenciesmsg $(DEPENDENCIES) $(DEPENDENCIESRPM) $(DDEPENDENCIES
 
 # Generate dependency files for recompilation on change semantics
 $(DEPENDENCIES) $(DEPENDENCIESRPM): $(DEPDIR)/%.d: %.c $(ALLH)
-	$(GCC) $(CLIFLAGS) -MM -MF $@ -MT $(PPCDIR)/$*.pp.c $<
+	$(GCC) $(CLIBUILD) $(CLIFLAGS) -MM -MF $@ -MT $(PPCDIR)/$*.pp.c $<
 # Generate dependency files for the dependency files...
 $(DDEPENDENCIES) $(DDEPENDENCIESRPM): $(DEPDIR)/%.dd: %.c $(ALLH)
-	$(GCC) $(CLIFLAGS) -MM -MF $@ -MT $(DEPDIR)/$*.d $<
+	$(GCC) $(CLIBUILD) $(CLIFLAGS) -MM -MF $@ -MT $(DEPDIR)/$*.d $<
 
 
 preprocessmsg:

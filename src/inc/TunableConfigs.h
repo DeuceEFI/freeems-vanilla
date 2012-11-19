@@ -42,12 +42,23 @@
  */
 
 
-/* Header file multiple inclusion protection courtesy eclipse Header Template	*/
-/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual		*/
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
 #ifndef FILE_TUNABLE_CONFIGS_H_SEEN
 #define FILE_TUNABLE_CONFIGS_H_SEEN
 
 
+/** Holds a datalog chunk configuration pair.
+ *
+ * A datalog configuration pair consists of an address and a size.
+ */
+typedef struct {
+	void* address;
+	unsigned short size;
+} logChunk;
+
+
+#define MAX_LOG_CHUNKS 16
 /** Holds all configuration for logging.
  *
  * These are in tunable config such that the system can pick up where it left
@@ -57,14 +68,14 @@
 typedef struct {
 	unsigned char datalogStreamType;            ///< Which type of datalog to pump out as fast as we can. @see commsCore.h
 	unsigned char datalogPollingType;           ///< Which type of datalog to pump out as fast as we can. @see commsCore.h
-	unsigned short basicDatalogLength;          ///< How much of the basic datalog to send, cuts off the trailing end.
+	unsigned char firstChunk;                   ///< The index of the first chunk to send.
+	unsigned char numberOfChunks;               ///< How many chunks to send.
+	logChunk logChunks[MAX_LOG_CHUNKS];         ///< Array of chunk sets so as to have on-board presets available to quickly swap to.
 	void* datalogByteStreamSourceAddress;       ///< Where to grab our data from.
 	void* datalogWordStreamSourceAddress;       ///< Where to grab our data from.
 	void* datalogLongStreamSourceAddressFirst;  ///< Where to grab our data from. If the second address is set to zero, get 4 bytes from this address.
 	void* datalogLongStreamSourceAddressSecond; ///< Where to grab our data from. If this is non-zero, get 2 bytes from the first address and 2 from this address.
 	// TODO scratch pad configs
-	// TODO structs configs
-	// Note, position type has no config and "just works"
 } loggingSetting;
 
 
@@ -86,7 +97,7 @@ typedef struct {
 	twoDTableUS engineTempEnrichmentTableFixed;   ///< Unused at this time.
 	twoDTableUS primingVolumeTable;               ///< @todo TODO define units. perhaps micro litres (cubic milli meters) would be good, 5 - 100 seem to be the norm 327.68 = 65535/200
 	twoDTableUS engineTempEnrichmentTablePercent; ///< Engine temperature enrichment by percent, AKA warmup curve.
-	twoDTableUS dwellMaxVersusRPMTable;           ///< Unused at this time.
+	twoDTableUS dwellVersusRPMTable;              ///< Useful for certain setups, will generalise later.
 	unsigned char filler[SMALL_TABLES_1_FILLER_SIZE];
 } SmallTables1;
 

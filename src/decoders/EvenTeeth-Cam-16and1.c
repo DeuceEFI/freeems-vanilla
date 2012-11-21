@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2011-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -29,29 +29,20 @@
  * @ingroup interruptHandlers
  * @ingroup enginePositionRPMDecoders
  *
- * @brief Reads any signal that is once per cylinder and only has one good edge.
+ * @brief For evenly spaced teeth on the camshaft with a single second input.
  *
- * This file contains the two interrupt service routines required for to build
- * cleanly. However, only the first one is used due to the simple nature of it.
+ * This is suitable for engines such as the Yamaha R1 with 8 teeth on the crank
+ * and equally for something with 16 on the cam. Sync is provided by the second
+ * input allowing a sequential and/or COP/CNP setup to be used.
+ *
+ * @see EvenTeeth-Xand1.c
  */
 
 
 #define DECODER_IMPLEMENTATION_C
-#define DECODER_MAX_CODE_TIME    100 // To be optimised (shortened)!
-#define NUMBER_OF_REAL_EVENTS     1
-#define NUMBER_OF_VIRTUAL_EVENTS  4
+#define WITH_CAM_SYNC
+#define NUMBER_OF_EVENTS_ON_CAM 16
 
-#include "../inc/freeEMS.h"
-#include "../inc/interrupts.h"
-#include "../inc/decoderInterface.h"
-#include "../inc/utils.h"
-
-void decoderInitPreliminary(){} // This decoder works with the defaults
-void perDecoderReset(){} // Nothing special to reset for this code
-
-const unsigned short eventAngles[] = {0,180,360,540};
-const unsigned char eventValidForCrankSync[] = {0,0,0,0};
-
-
-#include "../inc/defaultPrimaryRPMISR.c"
-#include "../inc/defaultSecondaryRPMISR.c"
+#include "inc/EvenTeeth-Xand1.h"
+const unsigned char eventValidForCrankSync[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}; // Unused for now, but correct anyway.
+#include "code/EvenTeeth-Xand1.c"

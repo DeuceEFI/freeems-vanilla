@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2011-2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -29,29 +29,17 @@
  * @ingroup interruptHandlers
  * @ingroup enginePositionRPMDecoders
  *
- * @brief Reads any signal that is once per cylinder and only has one good edge.
+ * @brief Even teeth setup for the early 4AGE distributors.
  *
- * This file contains the two interrupt service routines required for to build
- * cleanly. However, only the first one is used due to the simple nature of it.
+ * @see EvenTeeth-Xand1.c
  */
 
 
 #define DECODER_IMPLEMENTATION_C
-#define DECODER_MAX_CODE_TIME    100 // To be optimised (shortened)!
-#define NUMBER_OF_REAL_EVENTS     1
-#define NUMBER_OF_VIRTUAL_EVENTS  4
+#define WITH_COMBUSTION_SYNC
+#define NUMBER_OF_EVENTS_PER_SYNC 6
+#define CYLINDER_COUNT 4
+#define TOTAL_EVENT_COUNT 24
 
-#include "../inc/freeEMS.h"
-#include "../inc/interrupts.h"
-#include "../inc/decoderInterface.h"
-#include "../inc/utils.h"
-
-void decoderInitPreliminary(){} // This decoder works with the defaults
-void perDecoderReset(){} // Nothing special to reset for this code
-
-const unsigned short eventAngles[] = {0,180,360,540};
-const unsigned char eventValidForCrankSync[] = {0,0,0,0};
-
-
-#include "../inc/defaultPrimaryRPMISR.c"
-#include "../inc/defaultSecondaryRPMISR.c"
+#include "inc/EvenTeeth-Xand1.h"
+#include "code/EvenTeeth-Xand1.c"

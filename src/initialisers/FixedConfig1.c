@@ -52,7 +52,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == SEANKLT1_ID
 		perCylinderVolume:  CYLINDER_VOLUME(727),
 		injectorFlow:       CC_PER_MINUTE(525),
-#elif SEANKR1 // No ID assigned yet!
+#elif CONFIG == SEANKR1
 		perCylinderVolume:  CYLINDER_VOLUME(250),
 		injectorFlow:       CC_PER_MINUTE(230), // http://www.witchhunter.com/flowdatapix/bcdh210.jpg
 #elif CONFIG == SLATER_ID
@@ -61,15 +61,12 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == PETERJSERIES_ID
 		perCylinderVolume:  CYLINDER_VOLUME(585),
 		injectorFlow:       CC_PER_MINUTE(320),
-#elif CONFIG == DEUCECOUPE_ID  //http://en.wikipedia.org/wiki/General_Motors_60%C2%B0_V6_engine#L82
-		perCylinderVolume:  CYLINDER_VOLUME(523), //3136 cc / 6 cylinders = 522.667 cc/cylinder
-	//	injectorFlow:       CC_PER_MINUTE(174), //17 lbs/hour * 10.2 lbs/hour / cc/minute = 174 cc/minute
-		injectorFlow:       CC_PER_MINUTE(194), //19 lbs/hour * 10.2 lbs/hour / cc/minute = 193.8 cc/minute
-	//	injectorFlow:       CC_PER_MINUTE(235), //23 lbs/hour * 10.2 lbs/hour / cc/minute = 234.6 cc/minute
-#elif CONFIG == DEUCES10_ID  //http://en.wikipedia.org/wiki/GM_Vortec_engine#2200
-		perCylinderVolume:  CYLINDER_VOLUME(548), //2189 cc / 2 cylinders = 547.25 cc/cylinder
-	//	injectorFlow:       CC_PER_MINUTE(174), //17 lbs/hour * 10.2 lbs/hour / cc/minute = 174 cc/minute
-		injectorFlow:       CC_PER_MINUTE(194), //19 lbs/hour * 10.2 lbs/hour / cc/minute = 193.8 cc/minute
+#elif CONFIG == DEUCECOUPE_ID
+		perCylinderVolume:  CYLINDER_VOLUME(522),
+		injectorFlow:       CC_PER_MINUTE(235),
+#elif CONFIG == DEUCES10_ID
+		perCylinderVolume:  CYLINDER_VOLUME(548),
+		injectorFlow:       CC_PER_MINUTE(235),
 #else
 		perCylinderVolume:  CYLINDER_VOLUME(500),
 		injectorFlow:       CC_PER_MINUTE(550),
@@ -133,7 +130,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)}, // 1,2,3,4: Firing order: 1-3-4-2 set up in loom
 		outputEventPinNumbers:           {0,1,2,3}, // COP/CNP ignition only
 		schedulingConfigurationBits:     {0,0,0,0}, // All ignition
-		decoderEngineOffset:         ANGLE(482.00), // Volvo B21A with DSM/Miata CAS + 24and1 disk
+		decoderEngineOffset:         ANGLE(566.00), // Volvo B21A with DSM/Miata CAS + 24and1 disk
 		numberOfConfiguredOutputEvents:          4, // COP setup
 		numberOfInjectionsPerEngineCycle:        1  // Ditto
 
@@ -169,13 +166,13 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		numberOfConfiguredOutputEvents:         12, // See three lines above
 		numberOfInjectionsPerEngineCycle:        2  // Semi-sequential, for now.
 
-#elif CONFIG == DEUCES10_ID  //1996 Vortec 2.2L 4 cylinder, Firing order: 1-3-4-2, wasted spark DIS, http://en.wikipedia.org/wiki/GM_Vortec_engine#2200
-		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540),ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)}, // Firing order: 1-3-4-2, wired engine with cylinder one on output one
-		outputEventPinNumbers:       {0,0,0,0,2,4,5,3}, // DIS E-dizzy and sequential.
-		schedulingConfigurationBits: {0,0,0,0,0,0,1,1,1,1}, // 4 E-dizzy style DIS ignition outputs and 4 injection events, sequential injection!
-		decoderEngineOffset:           ANGLE(0.00), // Nothing for now, so as to be able to figure out what is going on.
-		numberOfConfiguredOutputEvents:         8, // See three lines above
-		numberOfInjectionsPerEngineCycle:        1  // Sequential, baby, yeah!
+#elif CONFIG == DEUCES10_ID // Firing order 1-3-4-2 setup in wiring harness http://forum.diyefi.org/viewtopic.php?f=55&t=1962
+		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540)},
+		outputEventPinNumbers:       {0,0,0,0,5,4,4,4}, // DIS E-dizzy and Sequential
+		schedulingConfigurationBits: {0,0,0,0,1,1,1,1}, // First 4 ign, Last 4 fuel
+		decoderEngineOffset:           ANGLE(0.00), //
+		numberOfConfiguredOutputEvents:          8, // 4 coils 4 injectors
+		numberOfInjectionsPerEngineCycle:        1  // pin 5 of port-t will be our only fuel reference
 
 #elif CONFIG == PETERTRUCK_ID // Firing order 1-5-3-6-2-4
 		anglesOfTDC: {ANGLE(0), ANGLE(120), ANGLE(240), ANGLE(360), ANGLE(480), ANGLE(600)},
@@ -184,6 +181,14 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		decoderEngineOffset:           ANGLE(0.00), // Trim fuel injection END point with this value.
 		numberOfConfiguredOutputEvents:          6, // THESE ARE IGN, THEY ARE NOT FUEL
 		numberOfInjectionsPerEngineCycle:        1  // Sequential, baby, yeah!
+
+#elif CONFIG == SEANKR1_ID // Firing order 1-2-3-4
+		anglesOfTDC: {ANGLE(0), ANGLE(180), ANGLE(360), ANGLE(540), ANGLE(45), ANGLE(90), ANGLE(145), ANGLE(270), ANGLE(315), ANGLE(450), ANGLE(495), ANGLE(630)},
+		outputEventPinNumbers:       {0,1,2,3,5,4,4,4,4,4,4,4}, // COP/CNP ignition only
+		schedulingConfigurationBits: {0,0,0,0,1,1,1,1,1,1,1,1}, // First 4 ign, 8 fuel
+		decoderEngineOffset:           ANGLE(0.00), //
+		numberOfConfiguredOutputEvents:          12, // 4 coils 8 injectors
+		numberOfInjectionsPerEngineCycle:        1  // pin 5 of port-t will be our only fuel reference
 
 #else // Nothing scheduled by default, no sensible default for all possible vehicle setups.
 		anglesOfTDC:                            {}, // Depends on cylinder count and other variables
@@ -199,6 +204,12 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #if CONFIG == SLATER_ID
 			disableThreshold:  RPM(7000),
 			reenableThreshold: RPM(6900)
+#elif CONFIG == SEANKR1_ID
+			disableThreshold:  RPM(12050),
+			reenableThreshold: RPM(11800)
+#elif CONFIG == DEUCES10_ID
+			disableThreshold:  RPM(5800),
+			reenableThreshold: RPM(5600)
 #else
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4900)  // Come back on before ignition does
@@ -220,6 +231,12 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == PETERTRUCK_ID
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4950)
+#elif CONFIG == SEANKR1_ID
+			disableThreshold:  RPM(12100),
+			reenableThreshold: RPM(11900)
+#elif CONFIG == DEUCES10_ID
+			disableThreshold:  RPM(5800),
+			reenableThreshold: RPM(5500)
 #else
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4800)  // Come back on after injection does
@@ -253,8 +270,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #if CONFIG == DEUCECOUPE_ID
 			[0] = {
 				variable: &CoreVars0.RPM,
-				upperValue: RPM(400), //FreeEMS control of ignition timing above this RPM
-				lowerValue: RPM(300), //GM Ignition Control Module base timing below this RPM
+				upperValue: RPM(400),
+				lowerValue: RPM(300),
 				port: (unsigned char*)&PORTT,
 				mask: BIT3,
 				flags: 0
@@ -262,8 +279,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == DEUCES10_ID
 			[0] = {
 				variable: &CoreVars0.RPM,
-				upperValue: RPM(400), //FreeEMS control of ignition timing above this RPM
-				lowerValue: RPM(300), //GM Ignition Control Module base timing below this RPM
+				upperValue: RPM(400),
+				lowerValue: RPM(300),
 				port: (unsigned char*)&PORTT,
 				mask: BIT3,
 				flags: 0
@@ -278,25 +295,6 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 				flags: 0
 			},
 #endif
-#if CONFIG == DEUCECOUPE_ID
-			[1] = {
-				variable: &CoreVars0.CHT,
-				upperValue: DEGREES_C(95),// 203*F
-				lowerValue: DEGREES_C(90),// 194*F
-				port: (unsigned char*)&PORTK,
-				mask: BIT4,
-				flags: 0
-			}
-#elif CONFIG == DEUCES10_ID
-			[1] = {
-				variable: &CoreVars0.CHT,
-				upperValue: DEGREES_C(95),// 203*F
-				lowerValue: DEGREES_C(90),// 194*F
-				port: (unsigned char*)&PORTK,
-				mask: BIT4,
-				flags: 0
-			}
-#else
 			[1] = {
 				variable: &CoreVars0.CHT,
 				upperValue: DEGREES_C(100),
@@ -305,7 +303,6 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 				mask: BIT4,
 				flags: 0
 			}
-#endif
 		},
 		numberConfigured: 2,
 		spare: 0

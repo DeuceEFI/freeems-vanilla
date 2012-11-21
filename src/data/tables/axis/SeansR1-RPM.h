@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2012 Sean Keys
  *
  * This file is part of the FreeEMS project.
  *
@@ -26,32 +26,34 @@
 
 /** @file
  *
- * @ingroup interruptHandlers
- * @ingroup enginePositionRPMDecoders
+ * @ingroup dataInitialisers
  *
- * @brief Reads any signal that is once per cylinder and only has one good edge.
- *
- * This file contains the two interrupt service routines required for to build
- * cleanly. However, only the first one is used due to the simple nature of it.
+ * @brief The RPM axis values for my Yamaha R1's very rough tune.
  */
 
 
-#define DECODER_IMPLEMENTATION_C
-#define DECODER_MAX_CODE_TIME    100 // To be optimised (shortened)!
-#define NUMBER_OF_REAL_EVENTS     1
-#define NUMBER_OF_VIRTUAL_EVENTS  4
-
-#include "../inc/freeEMS.h"
-#include "../inc/interrupts.h"
-#include "../inc/decoderInterface.h"
-#include "../inc/utils.h"
-
-void decoderInitPreliminary(){} // This decoder works with the defaults
-void perDecoderReset(){} // Nothing special to reset for this code
-
-const unsigned short eventAngles[] = {0,180,360,540};
-const unsigned char eventValidForCrankSync[] = {0,0,0,0};
-
-
-#include "../inc/defaultPrimaryRPMISR.c"
-#include "../inc/defaultSecondaryRPMISR.c"
+ RPM(250),
+ RPM(500),
+ RPM(750),
+RPM(1000),
+RPM(1300),
+RPM(1600),
+RPM(2200),
+RPM(2800),
+RPM(3400),
+RPM(4000),
+RPM(4600),
+RPM(5200),
+RPM(5800),
+RPM(6400),
+RPM(7000),
+RPM(7600),
+RPM(8200),
+RPM(8800),
+RPM(9400),
+RPM(10000),
+RPM(10600),
+RPM(11200),
+RPM(11800),
+RPM(12400),
+RPM(13000)

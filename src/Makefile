@@ -113,7 +113,8 @@ TAGNAME = $(OUTDIR)/gitTagName.txt
 
 # Program prefixes, for the main cpu and for the xgate coprocessor
 PREFIX = m68hc11-
-XGPREFIX = mc9xgate-
+#XGPREFIX = mc9xgate-
+XGPREFIX = xgate-
 
 # All of the tools
 CP = cp
@@ -180,7 +181,7 @@ RPMSPECIAL = Listener.c BenchTest.c
 RPMEVENTEETH = EvenTeeth-Cam-24and1.c EvenTeeth-Cam-16and1.c EvenTeeth-Cam-6and1.c EvenTeeth-Cam-4and1.c EvenTeeth-Distributor-4of6and1.c
 RPMMISSINGTEETH = MissingTeeth-TestFile.c MissingTeeth-Cam-24minus1.c MissingTeeth-Crank-8minus1.c MissingTeeth-Crank-12minus1.c MissingTeeth-Crank-36minus1.c MissingTeeth-Crank-60minus2.c MissingTeeth-Cam-6minus2.c MissingTeeth-Crank-30minus2.c MissingTeeth-Cam-12minus1.c
 RPMHALLOROPTICAL = HallOrOptical-Distributor-4of64.c HallOrOptical-Distributor-4of69.c
-RPMVRDISTRIBUTOR = VR-Distributor-8-Cylinders.c 
+RPMVRDISTRIBUTOR = 
 # Specific purpose per engine stuff here
 RPMSPECIFICENGINE1 = MitsiAndMazda-CAS-4and1.c GM-LT1-CAS-360and8.c JSeries-12CrankWith6-2Cam.c
 # Insert your file above and get coding!

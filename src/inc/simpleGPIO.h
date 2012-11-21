@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -26,32 +26,37 @@
 
 /** @file
  *
- * @ingroup interruptHandlers
- * @ingroup enginePositionRPMDecoders
- *
- * @brief Reads any signal that is once per cylinder and only has one good edge.
- *
- * This file contains the two interrupt service routines required for to build
- * cleanly. However, only the first one is used due to the simple nature of it.
+ * Declarations for simpleGPIO.c implementations.
+ * To add a file to the project :
+ * - Change all 4 hash defines to the filename uppercased and underscored
  */
 
 
-#define DECODER_IMPLEMENTATION_C
-#define DECODER_MAX_CODE_TIME    100 // To be optimised (shortened)!
-#define NUMBER_OF_REAL_EVENTS     1
-#define NUMBER_OF_VIRTUAL_EVENTS  4
-
-#include "../inc/freeEMS.h"
-#include "../inc/interrupts.h"
-#include "../inc/decoderInterface.h"
-#include "../inc/utils.h"
-
-void decoderInitPreliminary(){} // This decoder works with the defaults
-void perDecoderReset(){} // Nothing special to reset for this code
-
-const unsigned short eventAngles[] = {0,180,360,540};
-const unsigned char eventValidForCrankSync[] = {0,0,0,0};
+/* Header file multiple inclusion protection courtesy eclipse Header Template */
+/* and http://gcc.gnu.org/onlinedocs/gcc-3.1.1/cpp/ C pre processor manual    */
+#ifndef FILE_SIMPLE_GPIO_H_SEEN
+#define FILE_SIMPLE_GPIO_H_SEEN
 
 
-#include "../inc/defaultPrimaryRPMISR.c"
-#include "../inc/defaultSecondaryRPMISR.c"
+#ifdef EXTERN
+#warning "EXTERN already defined by another header, please sort it out!"
+#undef EXTERN /* If fail on warning is off, remove the definition such that we can redefine correctly. */
+#endif
+
+#ifdef SIMPLE_GPIO_C
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+
+
+EXTERN void performSimpleGPIO(void) FPAGE_FE;
+
+
+#undef EXTERN
+
+#else
+	/* let us know if we are being untidy with headers */
+	#warning "Header file SIMPLE_GPIO_H seen before, sort it out!"
+/* end of the wrapper ifdef from the very top */
+#endif

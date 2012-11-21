@@ -92,6 +92,11 @@
 #define ToyotaNA227kPaRange      (ToyotaNA227kPaMax - ToyotaNA227kPaMin)
 // NOTE: The accuracy of this calibration is highly questionable. Please use the Honda units which is configured above and known to be accurate
 
+/* GM 1bar found on normally aspirated vehicles. See http://www.robietherobot.com/storm/mapsensor.htm */
+#define GM1BarMin                KPA(  10.0)     /* Pressure read at lowest ADC reading */
+#define GM1BarMax                KPA(105.0)     /* Pressure read at highest ADC reading */
+#define GM1BarRange              (GM1BarMax - GM1BarMin)
+
 /* GM 2bar found on Cyclone Turbo V6 and probably other cars too. TODO These numbers are probably not that accurate... */
 #define GM2BarMin                KPA(  1.5)     /* Pressure read at lowest ADC reading */
 #define GM2BarMax                KPA(200.0)     /* Pressure read at highest ADC reading */
@@ -123,8 +128,8 @@
 
 
 // Voltage based small table default data
-#define ARRAY_OF_16_VOLTAGES      {  V(1.55),   V(3.10),   V(4.65),   V(6.20),   V(7.74),  V(9.29),  V(10.84),  V(12.39),  V(13.94),  V(15.49),  V(17.04),  V(18.59),  V(20.13),  V(21.68),  V(23.23),  V(24.68)}
-#define ARRAY_OF_16_DEADTIMES     { T(1.49),  T(1.31),  T(1.20),  T(1.10),  T(1.00),  T(0.93),  T(0.90),  T(0.73),  T(0.60),  T(0.49),  T(0.49),  T(0.49),  T(0.49),  T(0.49),  T(0.49),  T(0.49)}
+#define ARRAY_OF_16_VOLTAGES      {  V(6.0),   V(7.2),   V(8.4),   V(9.0),   V(9.6),  V(10.2),  V(10.8),  V(11.4),  V(12.0),  V(12.6),  V(13.2),  V(13.8),  V(14.4),  V(17.8),  V(21.0),  V(24.5)}
+#define ARRAY_OF_16_DEADTIMES     { T(2.91),  T(2.30),  T(1.86),  T(1.70),  T(1.58),  T(1.47),  T(1.39),  T(1.30),  T(1.23),  T(1.15),  T(1.10),  T(1.04),  T(0.99),  T(0.76),  T(0.57),  T(0.40)}
 #define ARRAY_OF_16_DWELLS        {T(14.55), T(11.50),  T(9.30),  T(8.50),  T(7.90),  T(7.35),  T(6.95),  T(6.50),  T(6.15),  T(5.75),  T(5.48),  T(5.20),  T(4.95),  T(3.80),  T(2.85),  T(2.00)}
 
 // Temperature based small table default data

@@ -56,7 +56,10 @@
 #define PETERJSERIES_ID 10 // Winter thrasher, works so well he refuses to whinge
 #define DEUCECOUPE_ID   11 // Work in progress, ignition not setup yet
 #define PETERTRUCK_ID   12 // Work horse vehicle, about to get boosted
-#define DEUCES10_ID   	16 // Work in progress, ignition not setup yet
+
+#define SEANKR1_ID      14 // Desert/Sand Rail Turbo Yamaha R1
+#define DEUCES10_ID     16 // Work in progress
+
 // Looking forward to there being links to threads here soon! In no particular order:
 //#define LEV8N
 //#define SEANKR1
@@ -103,12 +106,15 @@
 #elif defined DEUCECOUPE
 #define CONFIG DEUCECOUPE_ID
 #define PRELIM_CONFIG "DEUCECOUPE"
-#elif defined DEUCES10
-#define CONFIG DEUCES10_ID
-#define PRELIM_CONFIG "DEUCES10"
 #elif defined PETERTRUCK
 #define CONFIG PETERTRUCK_ID
 #define PRELIM_CONFIG "PETERTRUCK"
+#elif defined SEANKR1
+#define CONFIG SEANKR1_ID
+#define PRELIM_CONFIG "SEANKR1"
+#elif defined DEUCES10
+#define CONFIG DEUCES10_ID
+#define PRELIM_CONFIG "DEUCES10"
 #elif defined CLIFLAGS && !(defined XGATE)
 #error "CLIFLAGS defined, but no build matched! Not allowing config to fall back to default!"
 #define CONFIG -1
@@ -125,7 +131,7 @@
 
 // Make sure people know what they're getting themselves in for
 #ifdef XGATE
-#warning "XGATE is currently not recommended, nor thoroughly tested! Use at your own risk and without support! goo.gl/LCOMR" // Remove this line to build. See http://forum.diyefi.org/viewtopic.php?f=8&t=1700
+//#warning "XGATE is currently not recommended, nor thoroughly tested! Use at your own risk and without support! goo.gl/LCOMR" // Remove this line to build. See http://forum.diyefi.org/viewtopic.php?f=8&t=1700
 #define BUILD_CONFIG PRELIM_CONFIG "-XGATE"
 
 #else

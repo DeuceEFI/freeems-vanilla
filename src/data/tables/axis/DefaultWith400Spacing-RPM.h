@@ -1,6 +1,6 @@
 /* FreeEMS - the open source engine management system
  *
- * Copyright 2008-2011 Fred Cooke
+ * Copyright 2012 Fred Cooke
  *
  * This file is part of the FreeEMS project.
  *
@@ -26,32 +26,37 @@
 
 /** @file
  *
- * @ingroup interruptHandlers
- * @ingroup enginePositionRPMDecoders
+ * @ingroup dataInitialisers
  *
- * @brief Reads any signal that is once per cylinder and only has one good edge.
- *
- * This file contains the two interrupt service routines required for to build
- * cleanly. However, only the first one is used due to the simple nature of it.
+ * @brief Default RPM values spaced at 400RPM after the cranking and idling rows.
  */
 
 
-#define DECODER_IMPLEMENTATION_C
-#define DECODER_MAX_CODE_TIME    100 // To be optimised (shortened)!
-#define NUMBER_OF_REAL_EVENTS     1
-#define NUMBER_OF_VIRTUAL_EVENTS  4
-
-#include "../inc/freeEMS.h"
-#include "../inc/interrupts.h"
-#include "../inc/decoderInterface.h"
-#include "../inc/utils.h"
-
-void decoderInitPreliminary(){} // This decoder works with the defaults
-void perDecoderReset(){} // Nothing special to reset for this code
-
-const unsigned short eventAngles[] = {0,180,360,540};
-const unsigned char eventValidForCrankSync[] = {0,0,0,0};
-
-
-#include "../inc/defaultPrimaryRPMISR.c"
-#include "../inc/defaultSecondaryRPMISR.c"
+// 27 RPM values of which 24 are used by default
+  RPM(200),
+  RPM(700),
+ RPM(1100),
+ RPM(1500),
+ RPM(1900),
+ RPM(2300),
+ RPM(2700),
+ RPM(3100),
+ RPM(3500),
+ RPM(3900),
+ RPM(4300),
+ RPM(4700),
+ RPM(5100),
+ RPM(5500),
+ RPM(5900),
+ RPM(6300),
+ RPM(6700),
+ RPM(7100),
+ RPM(7500),
+ RPM(7900),
+ RPM(8300),
+ RPM(8700),
+ RPM(9100),
+ RPM(9500),
+ RPM(9800),
+RPM(10200),
+RPM(10600)

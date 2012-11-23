@@ -147,7 +147,7 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #include "../data/tables/ign/Deuces3100Timing.h"
 #elif CONFIG == DEUCES10_ID
 //#include "../data/tables/ign/TestDIS.h" // Use for verifying your DIS timing
-#include "../data/tables/ign/Deuces3100Timing.h"
+#include "../data/tables/ign/DeucesS10Timing.h"
 #elif CONFIG == PETERTRUCK_ID
 #include "../data/tables/ign/HotelHyundaiIgnitionTiming.h"
 #elif CONFIG == DEFAULT_ID

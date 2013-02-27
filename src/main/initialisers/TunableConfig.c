@@ -70,6 +70,10 @@ const volatile SmallTables1 SmallTablesAFlashV  TUNETABLESDV1 = {
 #elif CONFIG == DEUCECOUPE_ID
 			Axis:   ARRAY_OF_16_VOLTAGES,
 			Values: { T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00)}
+#elif CONFIG == DEUCES10_ID
+			Axis:   ARRAY_OF_16_VOLTAGES,
+			Values: { T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00),  T(1.00)}
+
 #else
 			Axis:   ARRAY_OF_16_VOLTAGES,
 			Values: ARRAY_OF_16_DWELLS

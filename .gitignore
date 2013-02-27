@@ -15,7 +15,7 @@ docs/latex/*.ps
 docs/latex/*.toc
 
 src/main/dependencies/
-src/main/firmware/
+# src/main/firmware/ #Andy commented out so I can backup my firmware builds
 src/main/firmware-all/
 src/main/output/
 src/main/preprocessedc/

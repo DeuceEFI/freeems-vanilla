@@ -235,6 +235,9 @@ const volatile fixedConfig2 fixedConfigs2 FIXEDCONF2 = {
 #elif CONFIG == SCAVENGER_ID
 		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(100),
 		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(100),
+#elif CONFIG == DEUCES10_ID
+		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(85), // Percentage of inputEventTimeTolerance from logfile which showed 1805.0 which equates to approximately 80.5%, 85% gives some tolerance.
+		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(85),
 #else
 		accelerationInputEventTimeTolerance: ACCEL_TIME_TOL(50),
 		decelerationInputEventTimeTolerance: DECEL_TIME_TOL(50),

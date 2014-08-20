@@ -69,10 +69,10 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		injectorFlow:       CC_PER_MINUTE(320),
 #elif CONFIG == DEUCECOUPE_ID
 		perCylinderVolume:  CYLINDER_VOLUME(522),
-		injectorFlow:       CC_PER_MINUTE(235),
+		injectorFlow:       CC_PER_MINUTE(180),
 #elif CONFIG == DEUCES10_ID
 		perCylinderVolume:  CYLINDER_VOLUME(548),
-		injectorFlow:       CC_PER_MINUTE(235),
+		injectorFlow:       CC_PER_MINUTE(180),
 #elif CONFIG == SCAVENGER_ID
 		perCylinderVolume:  CYLINDER_VOLUME(399.25),
 		injectorFlow:       CC_PER_MINUTE(540),
@@ -217,8 +217,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(7000),
 			reenableThreshold: RPM(6900)
 #elif CONFIG == DEUCES10_ID
-			disableThreshold:  RPM(5600),
-			reenableThreshold: RPM(5400)
+			disableThreshold:  RPM(4700),
+			reenableThreshold: RPM(4600)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7150)
@@ -244,8 +244,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4950)
 #elif CONFIG == DEUCES10_ID
-			disableThreshold:  RPM(5600),
-			reenableThreshold: RPM(5300)
+			disableThreshold:  RPM(4650),
+			reenableThreshold: RPM(4550)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7100)

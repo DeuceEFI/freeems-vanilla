@@ -217,8 +217,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(7000),
 			reenableThreshold: RPM(6900)
 #elif CONFIG == DEUCES10_ID
-			disableThreshold:  RPM(4700),
-			reenableThreshold: RPM(4600)
+			disableThreshold:  RPM(5000),
+			reenableThreshold: RPM(4900)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7150)
@@ -244,8 +244,8 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4950)
 #elif CONFIG == DEUCES10_ID
-			disableThreshold:  RPM(4650),
-			reenableThreshold: RPM(4550)
+			disableThreshold:  RPM(5000),
+			reenableThreshold: RPM(4950)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7100)

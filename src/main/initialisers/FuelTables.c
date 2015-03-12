@@ -54,6 +54,7 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #if CONFIG == DEFAULT_ID
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 	RPMLength:  13,
 	LoadLength: 10,
@@ -63,6 +64,14 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #elif CONFIG == SNOTROCKET_ID
 	RPMLength:  12,
 	LoadLength: 8,
+=======
+#elif CONFIG == DEUCECOUPE_ID
+	RPMLength:  13,
+	LoadLength: 10,
+#elif CONFIG == DEUCES10_ID
+	RPMLength:  13,
+	LoadLength: 10,
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 	RPMLength:  16,
 	LoadLength: 16,
@@ -83,6 +92,7 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #elif CONFIG == PETERJSERIES_ID
 #include "../data/tables/axis/PetersJSeries-RPM.h"
 #elif CONFIG == DEUCECOUPE_ID
+<<<<<<< HEAD
 #include "../data/tables/axis/HotelHyundai-RPM.h"
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-RPM.h"
@@ -90,6 +100,11 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #include "../data/tables/axis/ScavengersMiata-RPM.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-RPM.h"
+=======
+#include "../data/tables/axis/Deuces3100-RPM.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/Deuces3100-RPM.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif CONFIG == DEFAULT_ID
 #include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 #else
@@ -112,6 +127,7 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #elif CONFIG == PETERJSERIES_ID
 #include "../data/tables/axis/PetersJSeries-Load.h"
 #elif CONFIG == DEUCECOUPE_ID
+<<<<<<< HEAD
 #include "../data/tables/axis/HotelHyundai-Load.h"
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-Load.h"
@@ -119,6 +135,11 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #include "../data/tables/axis/ScavengersMiata-Load.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-Load.h"
+=======
+#include "../data/tables/axis/Deuces3100-Load.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/Deuces3100-Load.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif CONFIG == DEFAULT_ID
 #include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 #else
@@ -141,6 +162,7 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #elif CONFIG == PETERJSERIES_ID
 #include "../data/tables/ve/PetersJSeriesVE.h"
 #elif CONFIG == DEUCECOUPE_ID
+<<<<<<< HEAD
 #include "../data/tables/ve/flat60Percent.h"
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/ve/DeucesS10VE.h"
@@ -148,6 +170,11 @@ const volatile mainTable VETableMainFlashV FUELTABLESD = {
 #include "../data/tables/ve/ScavengerVE24RPMx19Load.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/ve/SimsVolvoVE.h"
+=======
+#include "../data/tables/ve/Deuces3100VE.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/ve/DeucesS10VE.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif CONFIG == DEFAULT_ID
 #include "../data/tables/ve/DefaultVE24RPMx19Load.h"
 #else
@@ -191,12 +218,21 @@ const volatile mainTable LambdaTableFlashV FUELTABLESD = {
 #if CONFIG == DEFAULT_ID
 	RPMLength:  MAINTABLE_RPM_LENGTH,
 	LoadLength: MAINTABLE_LOAD_LENGTH,
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 	RPMLength:  13,
 	LoadLength: 10,
 #elif CONFIG == SNOTROCKET_ID
 	RPMLength:  12,
 	LoadLength: 8,
+=======
+#elif CONFIG == DEUCECOUPE_ID
+	RPMLength:  13,
+	LoadLength: 10,
+#elif CONFIG == DEUCES10_ID
+	RPMLength:  13,
+	LoadLength: 10,
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 	RPMLength:  16,
 	LoadLength: 16,
@@ -212,10 +248,17 @@ const volatile mainTable LambdaTableFlashV FUELTABLESD = {
 #include "../data/tables/axis/DefaultWith400Spacing-RPM.h"
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-RPM.h"
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-RPM.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-RPM.h"
+=======
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/tables/axis/Deuces3100-RPM.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/Deuces3100-RPM.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 #include "../data/tables/axis/FredsTruck-RPM.h"
 #endif
@@ -229,10 +272,17 @@ const volatile mainTable LambdaTableFlashV FUELTABLESD = {
 #include "../data/tables/axis/DefaultWith10and20SplitSpacing-Load.h"
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-Load.h"
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-Load.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/axis/SimsVolvo-Load.h"
+=======
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/tables/axis/Deuces3100-Load.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/axis/Deuces3100-Load.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 #include "../data/tables/axis/FredsTruck-Load.h"
 #endif
@@ -246,10 +296,17 @@ const volatile mainTable LambdaTableFlashV FUELTABLESD = {
 #include "../data/tables/lambda/DefaultLambda24RPMx19Load.h"
 #elif CONFIG == SLATER_ID
 #include "../data/tables/lambda/SlaterLambda.h"
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/lambda/DeucesS10Lambda.h"
 #elif CONFIG == SNOTROCKET_ID
 #include "../data/tables/lambda/SimsVolvoLambda.h"
+=======
+#elif CONFIG == DEUCECOUPE_ID
+#include "../data/tables/lambda/Deuces3100Lambda.h"
+#elif CONFIG == DEUCES10_ID
+#include "../data/tables/lambda/DeucesS10Lambda.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 #include "../data/tables/lambda/GenericLambda.h" // Reasonable starting point
 #endif

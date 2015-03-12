@@ -69,6 +69,7 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 		injectorFlow:       CC_PER_MINUTE(320),
 #elif CONFIG == DEUCECOUPE_ID
 		perCylinderVolume:  CYLINDER_VOLUME(522),
+<<<<<<< HEAD
 		injectorFlow:       CC_PER_MINUTE(180),
 #elif CONFIG == DEUCES10_ID
 		perCylinderVolume:  CYLINDER_VOLUME(548),
@@ -76,6 +77,12 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == SCAVENGER_ID
 		perCylinderVolume:  CYLINDER_VOLUME(399.25),
 		injectorFlow:       CC_PER_MINUTE(540),
+=======
+		injectorFlow:       CC_PER_MINUTE(235),
+#elif CONFIG == DEUCES10_ID
+		perCylinderVolume:  CYLINDER_VOLUME(548),
+		injectorFlow:       CC_PER_MINUTE(235),
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 		perCylinderVolume:  CYLINDER_VOLUME(500),
 		injectorFlow:       CC_PER_MINUTE(550),
@@ -217,11 +224,16 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(7000),
 			reenableThreshold: RPM(6900)
 #elif CONFIG == DEUCES10_ID
+<<<<<<< HEAD
 			disableThreshold:  RPM(5800),
 			reenableThreshold: RPM(5700)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7150)
+=======
+			disableThreshold:  RPM(5600),
+			reenableThreshold: RPM(5400)
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 			disableThreshold:  RPM(5850),
 			reenableThreshold: RPM(5800)  // Come back on before ignition does
@@ -244,11 +256,16 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 			disableThreshold:  RPM(5000),
 			reenableThreshold: RPM(4950)
 #elif CONFIG == DEUCES10_ID
+<<<<<<< HEAD
 			disableThreshold:  RPM(5800),
 			reenableThreshold: RPM(5650)
 #elif CONFIG == SCAVENGER_ID
 			disableThreshold:  RPM(7200),
 			reenableThreshold: RPM(7100)
+=======
+			disableThreshold:  RPM(5600),
+			reenableThreshold: RPM(5300)
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 			disableThreshold:  RPM(5800),
 			reenableThreshold: RPM(5750)  // Come back on after injection does
@@ -291,8 +308,13 @@ const volatile fixedConfig1 fixedConfigs1 FIXEDCONF1 = {
 #elif CONFIG == DEUCES10_ID
 			[0] = {
 				variable: &CoreVars0.RPM,
+<<<<<<< HEAD
 				upperValue: RPM(600),
 				lowerValue: RPM(500),
+=======
+				upperValue: RPM(400),
+				lowerValue: RPM(300),
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 				port: (unsigned char*)&PORTT,
 				mask: BIT3,
 				flags: 0

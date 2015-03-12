@@ -56,6 +56,7 @@
 #define PETERJSERIES_ID 10 // Winter thrasher, works so well he refuses to whinge
 #define DEUCECOUPE_ID   11 // Work in progress, ignition not setup yet
 #define PETERTRUCK_ID   12 // Work horse vehicle, about to get boosted
+<<<<<<< HEAD
 //efine PIOLIN_ID       13 // Project unlucky
 //efine MIKEC383_ID     14 // Mike's 1987 383 V8 Camaro
 #define SCAVENGER_ID    15 // Hacked up Miata turbo from the south!
@@ -73,6 +74,21 @@
 //efine JOSHSB18MINI_ID 27 // Josh's LS-VTEC powered Mini
 //efine BMSTBO_ID       28 // Piimae's E7 Corolla w/ 4A-GE 16V turbo
 
+=======
+#define DEUCES10_ID     16 // Work in progress
+// Looking forward to there being links to threads here soon! In no particular order:
+//#define LEV8N
+//#define SEANKR1
+//#define TTV8SUPRA
+//#define SECRETSQUIRREL // Shhhhhh! :-p
+//#define HOTCAT
+//#define MICROTECHSUCKS // Yes, that's you, John "I love MicroTech" Tramp
+//#define QUAKE86 // Yep, this one too! :-)
+//#define CRAIGB2200
+//#define DAILYRAVAGE // No pun intended!
+//#define QUICKRAVAGE // No pun intended here either!
+// No pressure guys! <cough, cough> :-)
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 
 // Convert labels into IDs for use in code and set the ID string
 #ifdef CONFIG
@@ -110,6 +126,7 @@
 #elif defined PETERTRUCK
 #define CONFIG PETERTRUCK_ID
 #define PRELIM_CONFIG "PETERTRUCK"
+<<<<<<< HEAD
 #elif defined PIOLIN
 #define CONFIG PIOLIN_ID
 #define PRELIM_CONFIG "PIOLIN"
@@ -158,6 +175,11 @@
 #elif defined BMSTBO
 #define CONFIG BMSTBO_ID
 #define PRELIM_CONFIG "BMSTBO"
+=======
+#elif defined DEUCES10
+#define CONFIG DEUCES10_ID
+#define PRELIM_CONFIG "DEUCES10"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif defined CLIFLAGS && !(defined XGATE)
 #error "CLIFLAGS defined, but no build matched! Not allowing config to fall back to default!"
 #define CONFIG -1

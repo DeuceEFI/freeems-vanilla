@@ -59,12 +59,21 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #elif CONFIG == SNOTROCKET_ID
 	RPMLength:  12,
 	LoadLength: 8,
+<<<<<<< HEAD
 #elif CONFIG == DEUCES10_ID
 	RPMLength:  13,
 	LoadLength: 10,
 #elif CONFIG == SCAVENGER_ID
 	RPMLength:  24,
 	LoadLength: 19,
+=======
+#elif CONFIG == DEUCECOUPE_ID
+	RPMLength:  13,
+	LoadLength: 10,
+#elif CONFIG == DEUCES10_ID
+	RPMLength:  13,
+	LoadLength: 10,
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #else
 	RPMLength:  16,
 	LoadLength: 16,
@@ -85,7 +94,11 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-RPM.h"
 #elif CONFIG == DEUCECOUPE_ID
+<<<<<<< HEAD
 #include "../data/tables/axis/HotelHyundai-RPM.h"
+=======
+#include "../data/tables/axis/Deuces3100-RPM.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-RPM.h"
 #elif CONFIG == PETERTRUCK_ID
@@ -114,7 +127,11 @@ const volatile mainTable IgnitionAdvanceTableMainFlashV TIMETABLESD = {
 #elif CONFIG == SLATER_ID
 #include "../data/tables/axis/Slater-Load.h"
 #elif CONFIG == DEUCECOUPE_ID
+<<<<<<< HEAD
 #include "../data/tables/axis/HotelHyundai-Load.h"
+=======
+#include "../data/tables/axis/Deuces3100-Load.h"
+>>>>>>> 3863c0f77aba62d85ee6f32da9e78f4e2f8656f8
 #elif CONFIG == DEUCES10_ID
 #include "../data/tables/axis/Deuces3100-Load.h"
 #elif CONFIG == PETERTRUCK_ID
